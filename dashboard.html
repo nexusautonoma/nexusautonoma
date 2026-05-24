@@ -1,214 +1,314 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nexus Autonoma — Dashboard</title>
+<title>RentSift — Agent Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect width='36' height='36' rx='8' fill='%230f1f3d'/><path d='M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z' fill='%23d4a017'/><rect x='9' y='19' width='18' height='3' rx='1.5' fill='%23d4a017' opacity='.8'/><rect x='11' y='23' width='14' height='7' rx='2' fill='%23d4a017' opacity='.6'/><rect x='9' y='28' width='18' height='2' rx='1' fill='%23d4a017'/></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --blue:#1e40af;
-  --blue-mid:#2563eb;
-  --blue-light:#3b82f6;
-  --blue-pale:#eff6ff;
-  --blue-border:#bfdbfe;
+  --bg:#fafaf7;
+  --bg2:#f4f3ee;
+  --surface:#ffffff;
+  --surface2:#f8f7f2;
+  --border:#e8e6df;
+  --border2:#d4d1c8;
+  --text:#1a1a14;
+  --text2:#4a4a3e;
+  --muted:#8a8a7a;
+  --gold:#b8860b;
+  --gold-light:#d4a017;
+  --gold-pale:#fdf8ee;
+  --gold-border:#e8d5a0;
+  --navy:#0f1f3d;
+  --navy2:#1a3260;
   --green:#059669;
   --green-pale:#ecfdf5;
+  --green-border:#a7f3d0;
   --amber:#d97706;
+  --amber-pale:#fffbeb;
+  --amber-border:#fde68a;
   --red:#dc2626;
-  --white:#ffffff;
-  --off-white:#f8faff;
-  --gray-50:#f9fafb;
-  --gray-100:#f3f4f6;
-  --gray-200:#e5e7eb;
-  --gray-300:#d1d5db;
-  --gray-500:#6b7280;
-  --gray-700:#374151;
-  --gray-900:#111827;
-  --text:#0f172a;
-  --muted:#64748b;
+  --red-pale:#fef2f2;
+  --red-border:#fecaca;
+  --sidebar-w:256px;
 }
-html{scroll-behavior:smooth}
-body{font-family:'Inter',sans-serif;background:var(--off-white);color:var(--text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+[data-theme="dark"]{
+  --bg:#0d0d0a;
+  --bg2:#141410;
+  --surface:#1a1a14;
+  --surface2:#202018;
+  --border:#2a2a22;
+  --border2:#3a3a2e;
+  --text:#f0efe8;
+  --text2:#c8c8b4;
+  --muted:#6a6a5a;
+  --gold:#d4a017;
+  --gold-light:#e8b820;
+  --gold-pale:#1a180e;
+  --gold-border:#3a3018;
+  --navy:#1a2d4d;
+  --navy2:#243d66;
+  --green-pale:#052e16;
+  --green-border:#166534;
+  --amber-pale:#1c1200;
+  --amber-border:#78350f;
+  --red-pale:#1c0000;
+  --red-border:#7f1d1d;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
 
-/* ── AUTH PAGE ── */
-.auth-page{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#f0f4ff 0%,#e8f2ff 100%);padding:20px}
-.auth-card{background:white;border:1px solid var(--gray-200);border-radius:20px;padding:44px;width:100%;max-width:420px;box-shadow:0 8px 32px rgba(0,0,0,0.06)}
-.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px}
-.auth-logo-mark{width:36px;height:36px;background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:10px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:17px;font-family:'Bricolage Grotesque',sans-serif}
-.auth-logo-text{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;color:var(--gray-900)}
-.auth-title{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;color:var(--gray-900);letter-spacing:-0.5px;margin-bottom:6px}
-.auth-sub{font-size:14px;color:var(--muted);margin-bottom:28px}
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:12px;font-weight:600;color:var(--gray-700);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
-.form-group input{width:100%;padding:11px 14px;border:1.5px solid var(--gray-200);border-radius:9px;font-size:15px;font-family:'Inter',sans-serif;color:var(--gray-900);background:white;outline:none;transition:border-color .2s,box-shadow .2s}
-.form-group input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,0.08)}
-.auth-btn{width:100%;background:var(--blue);color:white;padding:13px;border-radius:9px;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;box-shadow:0 2px 8px rgba(30,64,175,0.25);margin-top:4px}
-.auth-btn:hover{background:var(--blue-mid);box-shadow:0 4px 16px rgba(37,99,235,0.35)}
-.auth-btn:disabled{opacity:.6;cursor:not-allowed}
-.auth-error{background:#fef2f2;border:1px solid #fecaca;color:var(--red);padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none}
-.auth-toggle{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
-.auth-toggle a{color:var(--blue);font-weight:500;cursor:pointer;text-decoration:none}
-.auth-toggle a:hover{text-decoration:underline}
-.auth-divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--muted);font-size:12px}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--gray-200)}
-
-/* ── DASHBOARD LAYOUT ── */
-.dashboard{display:none;min-height:100vh;background:var(--off-white)}
-
-/* Sidebar */
-.sidebar{position:fixed;top:0;left:0;bottom:0;width:240px;background:white;border-right:1px solid var(--gray-200);display:flex;flex-direction:column;z-index:100}
-.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;gap:10px}
-.sidebar-logo-mark{width:30px;height:30px;background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:8px;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:14px;font-family:'Bricolage Grotesque',sans-serif;flex-shrink:0}
-.sidebar-logo-text{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;font-weight:700;color:var(--gray-900)}
-.sidebar-nav{padding:12px 10px;flex:1}
-.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;transition:all .15s;font-size:14px;font-weight:500;color:var(--gray-500);text-decoration:none;margin-bottom:2px}
-.nav-item:hover{background:var(--gray-50);color:var(--gray-900)}
-.nav-item.active{background:var(--blue-pale);color:var(--blue)}
-.nav-icon{font-size:16px;width:20px;text-align:center}
-.sidebar-bottom{padding:16px;border-top:1px solid var(--gray-100)}
-.user-chip{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:var(--gray-50);border:1px solid var(--gray-100)}
-.user-av{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--blue-light));display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:white;font-family:'Bricolage Grotesque',sans-serif;flex-shrink:0}
-.user-info{flex:1;min-width:0}
-.user-email{font-size:12px;font-weight:500;color:var(--gray-700);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.user-plan{font-size:11px;color:var(--muted)}
-.logout-btn{background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:4px;border-radius:5px;transition:color .2s}
-.logout-btn:hover{color:var(--red)}
-
-/* Main content */
-.main{margin-left:240px;padding:28px;min-height:100vh}
-.page-header{margin-bottom:24px}
-.page-title{font-family:'Bricolage Grotesque',sans-serif;font-size:26px;font-weight:800;color:var(--gray-900);letter-spacing:-0.5px}
-.page-sub{font-size:14px;color:var(--muted);margin-top:3px}
-
-/* Stats */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.stat-card{background:white;border:1px solid var(--gray-200);border-radius:14px;padding:20px;transition:box-shadow .2s}
-.stat-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.05)}
-.stat-label{font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
-.stat-num{font-family:'Bricolage Grotesque',sans-serif;font-size:32px;font-weight:800;color:var(--gray-900);letter-spacing:-1px;line-height:1}
-.stat-sub{font-size:12px;color:var(--muted);margin-top:5px;display:flex;align-items:center;gap:5px}
-.stat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-
-/* Leads table */
-.leads-card{background:white;border:1px solid var(--gray-200);border-radius:16px;overflow:hidden}
-.leads-header{padding:18px 20px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.leads-header-left h3{font-family:'Bricolage Grotesque',sans-serif;font-size:16px;font-weight:700;color:var(--gray-900)}
-.leads-header-left p{font-size:13px;color:var(--muted)}
-.filter-tabs{display:flex;gap:4px}
-.filter-tab{padding:6px 14px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--gray-200);background:none;color:var(--muted);transition:all .15s;font-family:'Inter',sans-serif}
-.filter-tab:hover{background:var(--gray-50)}
-.filter-tab.active{background:var(--blue);color:white;border-color:var(--blue)}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-thead tr{background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
-th{padding:11px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap}
-tbody tr{border-bottom:1px solid var(--gray-100);transition:background .15s;cursor:pointer}
-tbody tr:hover{background:var(--blue-pale)}
-tbody tr:last-child{border-bottom:none}
-td{padding:13px 16px;font-size:14px;color:var(--gray-700);vertical-align:middle}
-.td-name{font-weight:600;color:var(--gray-900)}
-.td-meta{font-size:12px;color:var(--muted);margin-top:1px}
-.score-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:7px;font-size:12px;font-weight:700}
-.sc-q{background:var(--green-pale);color:var(--green)}
-.sc-p{background:#fffbeb;color:var(--amber)}
-.sc-r{background:#fef2f2;color:var(--red)}
-.status-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:7px;font-size:12px;font-weight:600}
-.st-q{background:var(--green-pale);color:var(--green)}
-.st-p{background:#fffbeb;color:var(--amber)}
-.st-r{background:#fef2f2;color:var(--red)}
-.empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
-.empty-icon{font-size:40px;margin-bottom:12px}
-.empty-title{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;color:var(--gray-700);margin-bottom:6px}
-.empty-sub{font-size:14px}
-
-/* Loading */
-.loading-overlay{position:fixed;inset:0;background:white;display:flex;align-items:center;justify-content:center;z-index:999}
-.loading-spinner{width:40px;height:40px;border:3px solid var(--gray-200);border-top-color:var(--blue);border-radius:50%;animation:spin .8s linear infinite}
+/* ── LOADING ── */
+#app-loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:20px}
+.loading-logo{display:flex;align-items:center;gap:12px}
+.loading-logo-icon svg{width:40px;height:40px}
+.loading-logo-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--text);letter-spacing:0.5px}
+.loading-spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* Modal */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+/* ── AUTH ── */
+#auth-view{display:none;min-height:100vh;overflow-y:auto;align-items:center;justify-content:center;background:linear-height(135deg,var(--bg) 0%,var(--bg2) 100%);padding:40px 20px;position:relative}
+#auth-view::before{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,var(--gold-pale));opacity:.5;pointer-events:none}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:48px;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,0.08);position:relative;z-index:2}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:36px;text-decoration:none}
+.auth-logo svg{width:36px;height:36px}
+.auth-logo-text{display:flex;flex-direction:column;line-height:1}
+.auth-logo-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:0.5px}
+.auth-logo-tag{font-size:9px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+.auth-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.auth-eyebrow-line{width:24px;height:1px;background:var(--gold)}
+.auth-eyebrow-text{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2.5px;color:var(--gold)}
+.auth-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--text);letter-spacing:-0.5px;margin-bottom:6px}
+.auth-sub{font-size:14px;color:var(--muted);margin-bottom:28px}
+.auth-error{background:var(--red-pale);border:1px solid var(--red-border);color:var(--red);padding:11px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.form-group input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s,box-shadow .2s}
+.form-group input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
+.auth-btn{width:100%;background:var(--navy);color:white;padding:13px;border-radius:8px;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;letter-spacing:0.3px;margin-top:4px}
+.auth-btn:hover{background:var(--gold);transform:translateY(-1px);box-shadow:0 4px 20px rgba(184,134,11,0.3)}
+.auth-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.auth-toggle{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
+.auth-toggle a{color:var(--gold);font-weight:500;cursor:pointer;text-decoration:none}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:20px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── DASHBOARD LAYOUT ── */
+#dash-view{display:none;height:100vh;overflow:hidden}
+.dash-layout{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--navy);border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;flex-shrink:0;transition:background .3s}
+.sidebar-header{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sidebar-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.sidebar-brand svg{width:30px;height:30px;flex-shrink:0}
+.sidebar-brand-text{display:flex;flex-direction:column;line-height:1}
+.sidebar-brand-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:white;letter-spacing:0.5px}
+.sidebar-brand-tag{font-size:8px;font-weight:600;color:var(--gold-light);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}
+.nav-section-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.25);padding:0 10px;margin:16px 0 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .15s;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);text-decoration:none;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.9)}
+.nav-item.active{background:rgba(212,160,23,0.15);color:var(--gold-light);border:1px solid rgba(212,160,23,0.2)}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-item-badge{margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px}
+.sidebar-bottom{padding:16px 12px;border-top:1px solid rgba(255,255,255,0.06)}
+.user-block{display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08)}
+.user-av{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--navy);flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-email{font-size:11px;font-weight:500;color:rgba(255,255,255,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-plan{font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px}
+.sidebar-actions{display:flex;gap:6px;margin-top:8px}
+.sidebar-action-btn{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);padding:7px;border-radius:7px;font-size:12px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.sidebar-action-btn:hover{background:rgba(255,255,255,0.1);color:white}
+.logout-btn:hover{background:rgba(220,38,38,0.15);border-color:rgba(220,38,38,0.3);color:#f87171}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.topbar{height:60px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:var(--surface);flex-shrink:0;transition:background .3s,border-color .3s}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.topbar-badge{font-size:11px;font-weight:600;background:var(--gold-pale);color:var(--gold);border:1px solid var(--gold-border);padding:3px 10px;border-radius:100px;letter-spacing:0.3px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-btn{background:var(--surface2);border:1px solid var(--border);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;color:var(--text2)}
+.topbar-btn:hover{border-color:var(--gold);color:var(--gold)}
+.content{flex:1;overflow-y:auto;padding:28px}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;transition:all .2s;cursor:default}
+.stat-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.06);transform:translateY(-1px)}
+.stat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.stat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.si-blue{background:var(--gold-pale);border:1px solid var(--gold-border)}
+.si-green{background:var(--green-pale);border:1px solid var(--green-border)}
+.si-amber{background:var(--amber-pale);border:1px solid var(--amber-border)}
+.si-red{background:var(--red-pale);border:1px solid var(--red-border)}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:700;color:var(--text);letter-spacing:-1.5px;line-height:1}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:5px}
+.stat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* LEADS TABLE */
+.leads-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:background .3s,border-color .3s}
+.panel-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.panel-header-left h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text)}
+.panel-header-left p{font-size:12px;color:var(--muted);margin-top:1px}
+.filter-row{display:flex;gap:4px}
+.filter-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;font-family:'DM Sans',sans-serif;letter-spacing:0.2px}
+.filter-btn:hover{background:var(--bg2);color:var(--text)}
+.filter-btn.active{background:var(--navy);color:white;border-color:var(--navy)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--bg2);border-bottom:1px solid var(--border)}
+th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s;cursor:pointer}
+tbody tr:hover{background:var(--gold-pale)}
+tbody tr:last-child{border-bottom:none}
+td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
+.td-primary{font-weight:600;color:var(--text);font-size:14px}
+.td-secondary{font-size:11px;color:var(--muted);margin-top:1px}
+.score-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:0.3px}
+.sc-q{background:var(--green-pale);color:var(--green);border:1px solid var(--green-border)}
+.sc-p{background:var(--amber-pale);color:var(--amber);border:1px solid var(--amber-border)}
+.sc-r{background:var(--red-pale);color:var(--red);border:1px solid var(--red-border)}
+.status-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600}
+.st-q{background:var(--green-pale);color:var(--green)}
+.st-p{background:var(--amber-pale);color:var(--amber)}
+.st-r{background:var(--red-pale);color:var(--red)}
+.empty-state{text-align:center;padding:64px 24px}
+.empty-icon{font-size:36px;margin-bottom:14px;opacity:.5}
+.empty-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--muted)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
 .modal-overlay.open{display:flex}
-.modal{background:white;border-radius:20px;padding:32px;max-width:560px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.15);max-height:90vh;overflow-y:auto}
-.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px}
-.modal-title{font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;color:var(--gray-900);letter-spacing:-0.3px}
-.modal-close{background:var(--gray-100);border:none;width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0}
-.modal-close:hover{background:var(--gray-200)}
-.modal-section{margin-bottom:20px}
-.modal-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px}
-.modal-score{display:flex;align-items:center;gap:16px;padding:16px;background:var(--gray-50);border-radius:12px;margin-bottom:20px}
-.score-circle{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Bricolage Grotesque',sans-serif;font-size:22px;font-weight:800;flex-shrink:0}
-.sc-circle-q{background:var(--green-pale);color:var(--green)}
-.sc-circle-p{background:#fffbeb;color:var(--amber)}
-.sc-circle-r{background:#fef2f2;color:var(--red)}
-.score-info h4{font-size:16px;font-weight:600;color:var(--gray-900)}
-.score-info p{font-size:13px;color:var(--muted)}
-.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.detail-item{background:var(--gray-50);border-radius:10px;padding:12px}
-.detail-label{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
-.detail-value{font-size:14px;font-weight:500;color:var(--gray-900)}
-.ai-analysis-box{background:var(--blue-pale);border:1px solid var(--blue-border);border-radius:12px;padding:16px}
-.ai-analysis-label{font-size:11px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;display:flex;align-items:center;gap:6px}
-.ai-analysis-text{font-size:14px;color:var(--gray-700);line-height:1.65}
-.message-box{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:12px;padding:14px;font-size:14px;color:var(--gray-700);line-height:1.65;font-style:italic}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;max-width:580px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.15);max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:12px}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px}
+.modal-close{background:var(--bg2);border:1px solid var(--border);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;color:var(--muted)}
+.modal-close:hover{background:var(--red-pale);border-color:var(--red-border);color:var(--red)}
+.score-banner{display:flex;align-items:center;gap:16px;padding:18px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:24px}
+.score-circle{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;flex-shrink:0}
+.sc-circle-q{background:var(--green-pale);color:var(--green);border:2px solid var(--green-border)}
+.sc-circle-p{background:var(--amber-pale);color:var(--amber);border:2px solid var(--amber-border)}
+.sc-circle-r{background:var(--red-pale);color:var(--red);border:2px solid var(--red-border)}
+.score-info h4{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px}
+.modal-section{margin-bottom:22px}
+.modal-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.modal-section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.detail-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
+.detail-value{font-size:14px;font-weight:500;color:var(--text)}
+.ai-box{background:var(--gold-pale);border:1px solid var(--gold-border);border-radius:12px;padding:16px}
+.ai-box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ai-box-text{font-size:13px;color:var(--text2);line-height:1.7}
+.message-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7;font-style:italic}
 
-/* Setup banner */
-.setup-banner{background:linear-gradient(135deg,var(--blue),var(--blue-mid));border-radius:16px;padding:24px;margin-bottom:24px;color:white}
-.setup-banner h3{font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-weight:700;margin-bottom:6px}
-.setup-banner p{font-size:14px;color:rgba(255,255,255,0.8);margin-bottom:16px}
-.setup-steps{display:flex;flex-direction:column;gap:8px}
-.setup-step{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,0.9)}
-.setup-step-num{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,0.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
-.copy-url-box{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;margin-top:12px;gap:10px}
-.copy-url-text{font-size:12px;color:rgba(255,255,255,0.9);font-family:monospace;word-break:break-all}
-.copy-btn{background:rgba(255,255,255,0.2);border:none;color:white;padding:6px 14px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s;font-family:'Inter',sans-serif}
-.copy-btn:hover{background:rgba(255,255,255,0.3)}
+/* SETUP PAGE */
+.setup-banner{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);border-radius:14px;padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden}
+.setup-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(212,160,23,0.15),transparent);pointer-events:none}
+.setup-banner h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:white;margin-bottom:6px}
+.setup-banner p{font-size:14px;color:rgba(255,255,255,0.65);margin-bottom:20px;line-height:1.6}
+.setup-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.setup-step{display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,0.8)}
+.setup-step-num{width:24px;height:24px;border-radius:50%;background:rgba(212,160,23,0.2);border:1px solid rgba(212,160,23,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold-light);flex-shrink:0}
+.url-copy-box{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.url-text{font-size:12px;color:rgba(255,255,255,0.75);font-family:monospace;word-break:break-all}
+.copy-btn{background:var(--gold);color:var(--navy);padding:7px 16px;border-radius:7px;font-size:12px;font-weight:700;border:none;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'DM Sans',sans-serif}
+.copy-btn:hover{background:var(--gold-light);transform:translateY(-1px)}
+.info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .2s}
+.info-card:hover{border-color:var(--gold-border);box-shadow:0 4px 20px rgba(184,134,11,0.06)}
+.info-card-icon{font-size:24px;margin-bottom:12px}
+.info-card h4{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);margin-bottom:6px}
+.info-card p{font-size:13px;color:var(--muted);line-height:1.65}
 
-/* Toast */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--gray-900);color:white;padding:12px 20px;border-radius:10px;font-size:14px;font-weight:500;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px}
+/* ACCOUNT PAGE */
+.account-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.account-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .2s}
+.account-card h4{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.plan-badge-card{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--gold-pale);border:1px solid var(--gold-border);border-radius:10px;margin-bottom:14px}
+.plan-badge-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text)}
+.plan-badge-status{font-size:11px;font-weight:700;background:var(--green-pale);color:var(--green);border:1px solid var(--green-border);padding:4px 12px;border-radius:100px}
+.account-detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.account-detail-row:last-child{border-bottom:none}
+.account-detail-label{color:var(--muted)}
+.account-detail-value{font-weight:500;color:var(--text)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
 .toast.show{transform:translateY(0);opacity:1}
 
 @media(max-width:768px){
   .sidebar{display:none}
-  .main{margin-left:0;padding:16px}
   .stats-row{grid-template-columns:repeat(2,1fr)}
-  .detail-grid{grid-template-columns:1fr}
+  .detail-grid,.info-cards,.account-grid{grid-template-columns:1fr}
+  .content{padding:16px}
 }
 </style>
 </head>
 <body>
 
-<!-- Loading -->
-<div class="loading-overlay" id="loading">
+<!-- LOADING -->
+<div id="app-loading">
+  <div class="loading-logo">
+    <div class="loading-logo-icon">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="8" fill="#0f1f3d"/>
+        <path d="M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z" fill="#d4a017"/>
+        <rect x="9" y="19" width="18" height="3" rx="1.5" fill="#d4a017" opacity="0.8"/>
+        <rect x="11" y="23" width="14" height="7" rx="2" fill="#d4a017" opacity="0.6"/>
+        <rect x="9" y="28" width="18" height="2" rx="1" fill="#d4a017"/>
+      </svg>
+    </div>
+    <span class="loading-logo-name">RentSift</span>
+  </div>
   <div class="loading-spinner"></div>
 </div>
 
-<!-- AUTH PAGE -->
-<div class="auth-page" id="auth-page" style="display:none">
+<!-- AUTH -->
+<div id="auth-view" style="display:none;min-height:100vh;overflow-y:auto;align-items:center;justify-content:center;background:var(--bg);padding:40px 20px;position:relative">
   <div class="auth-card">
-    <div class="auth-logo">
-      <div class="auth-logo-mark">N</div>
-      <span class="auth-logo-text">NexusAutonoma</span>
-    </div>
+    <a href="https://rentsift.co.uk" class="auth-logo">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="8" fill="#0f1f3d"/>
+        <path d="M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z" fill="#d4a017"/>
+        <rect x="9" y="19" width="18" height="3" rx="1.5" fill="#d4a017" opacity="0.8"/>
+        <rect x="11" y="23" width="14" height="7" rx="2" fill="#d4a017" opacity="0.6"/>
+        <rect x="9" y="28" width="18" height="2" rx="1" fill="#d4a017"/>
+      </svg>
+      <div class="auth-logo-text">
+        <span class="auth-logo-name">RentSift</span>
+        <span class="auth-logo-tag">Agent Dashboard</span>
+      </div>
+    </a>
+
     <div id="login-form">
+      <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Secure Access</span></div>
       <h1 class="auth-title">Welcome back</h1>
-      <p class="auth-sub">Sign in to your agent dashboard</p>
-      <div class="auth-error" id="auth-error"></div>
-      <div class="form-group"><label>Email address</label><input type="email" id="login-email" placeholder="jane@agency.co.uk"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="••••••••"></div>
-      <button class="auth-btn" id="login-btn" onclick="handleLogin()">Sign in</button>
-      <div class="auth-toggle">Don't have an account? <a onclick="toggleForm('register')">Create one</a></div>
+      <p class="auth-sub">Sign in to your letting agent dashboard</p>
+      <div class="auth-error" id="login-error"></div>
+      <div class="form-group"><label>Email address</label><input type="email" id="login-email" placeholder="jane@agency.co.uk" autocomplete="email"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="auth-btn" id="login-btn" onclick="handleLogin()">Sign in to dashboard</button>
+      <div class="auth-toggle">New to RentSift? <a onclick="toggleForm('register')">Create your account</a></div>
     </div>
+
     <div id="register-form" style="display:none">
+      <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Get Started</span></div>
       <h1 class="auth-title">Create account</h1>
-      <p class="auth-sub">Start qualifying your leads automatically</p>
+      <p class="auth-sub">Set up your RentSift dashboard to start qualifying leads</p>
       <div class="auth-error" id="register-error"></div>
       <div class="form-group"><label>Email address</label><input type="email" id="reg-email" placeholder="jane@agency.co.uk"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="reg-password" placeholder="Min. 8 characters"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="reg-password" placeholder="Minimum 8 characters"></div>
       <div class="form-group"><label>Agency name</label><input type="text" id="reg-agency" placeholder="London Lettings Ltd"></div>
       <button class="auth-btn" id="register-btn" onclick="handleRegister()">Create account</button>
       <div class="auth-toggle">Already have an account? <a onclick="toggleForm('login')">Sign in</a></div>
@@ -217,173 +317,184 @@ td{padding:13px 16px;font-size:14px;color:var(--gray-700);vertical-align:middle}
 </div>
 
 <!-- DASHBOARD -->
-<div class="dashboard" id="dashboard">
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="sidebar-logo">
-      <div class="sidebar-logo-mark">N</div>
-      <span class="sidebar-logo-text">NexusAutonoma</span>
-    </div>
-    <nav class="sidebar-nav">
-      <a class="nav-item active" onclick="showSection('leads')"><span class="nav-icon">📊</span>Leads</a>
-      <a class="nav-item" onclick="showSection('setup')"><span class="nav-icon">⚙️</span>Setup</a>
-      <a class="nav-item" onclick="showSection('account')"><span class="nav-icon">👤</span>Account</a>
-    </nav>
-    <div class="sidebar-bottom">
-      <div class="user-chip">
-        <div class="user-av" id="user-av">?</div>
-        <div class="user-info">
-          <div class="user-email" id="user-email-display">Loading...</div>
-          <div class="user-plan">Pro Plan</div>
-        </div>
-        <button class="logout-btn" onclick="handleLogout()" title="Sign out">↩</button>
-      </div>
-    </div>
-  </div>
+<div id="dash-view">
+  <div class="dash-layout">
 
-  <!-- Main -->
-  <div class="main">
-
-    <!-- LEADS SECTION -->
-    <div id="section-leads">
-      <div class="page-header">
-        <h1 class="page-title">Lead Dashboard</h1>
-        <p class="page-sub">All your qualified rental enquiries in one place</p>
-      </div>
-
-      <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">Total Leads</div>
-          <div class="stat-num" id="stat-total">—</div>
-          <div class="stat-sub"><span class="stat-dot" style="background:var(--blue-light)"></span>All enquiries</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Qualified</div>
-          <div class="stat-num" id="stat-qualified" style="color:var(--green)">—</div>
-          <div class="stat-sub"><span class="stat-dot" style="background:var(--green)"></span>Ready for viewing</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Pending</div>
-          <div class="stat-num" id="stat-pending" style="color:var(--amber)">—</div>
-          <div class="stat-sub"><span class="stat-dot" style="background:var(--amber)"></span>Needs review</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Rejected</div>
-          <div class="stat-num" id="stat-rejected" style="color:var(--red)">—</div>
-          <div class="stat-sub"><span class="stat-dot" style="background:var(--red)"></span>Auto-filtered</div>
-        </div>
-      </div>
-
-      <div class="leads-card">
-        <div class="leads-header">
-          <div class="leads-header-left">
-            <h3>All Leads</h3>
-            <p>Click any row to view full AI analysis</p>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="https://rentsift.co.uk" class="sidebar-brand">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="rgba(255,255,255,0.08)"/>
+            <path d="M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z" fill="#d4a017"/>
+            <rect x="9" y="19" width="18" height="3" rx="1.5" fill="#d4a017" opacity="0.8"/>
+            <rect x="11" y="23" width="14" height="7" rx="2" fill="#d4a017" opacity="0.6"/>
+            <rect x="9" y="28" width="18" height="2" rx="1" fill="#d4a017"/>
+          </svg>
+          <div class="sidebar-brand-text">
+            <span class="sidebar-brand-name">RentSift</span>
+            <span class="sidebar-brand-tag">Agent Portal</span>
           </div>
-          <div class="filter-tabs">
-            <button class="filter-tab active" onclick="filterLeads('all',this)">All</button>
-            <button class="filter-tab" onclick="filterLeads('Qualified',this)">✅ Qualified</button>
-            <button class="filter-tab" onclick="filterLeads('Pending',this)">⏳ Pending</button>
-            <button class="filter-tab" onclick="filterLeads('Rejected',this)">❌ Rejected</button>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <button class="nav-item active" onclick="showSection('leads',this)"><span class="nav-icon">📊</span>Lead Dashboard<span class="nav-item-badge" id="nav-badge">0</span></button>
+        <button class="nav-item" onclick="showSection('setup',this)"><span class="nav-icon">⚙️</span>Setup & Integration</button>
+        <div class="nav-section-label">Account</div>
+        <button class="nav-item" onclick="showSection('account',this)"><span class="nav-icon">👤</span>My Account</button>
+        <a class="nav-item" href="mailto:hello@rentsift.co.uk"><span class="nav-icon">✉️</span>Support</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="user-block">
+          <div class="user-av" id="user-av">?</div>
+          <div class="user-info">
+            <div class="user-email" id="user-email-display">Loading...</div>
+            <div class="user-plan">Professional Plan</div>
           </div>
         </div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Applicant</th>
-                <th>Budget</th>
-                <th>Location</th>
-                <th>Employment</th>
-                <th>Score</th>
-                <th>Status</th>
-                <th>Date</th>
-              </tr>
-            </thead>
-            <tbody id="leads-tbody">
-              <tr><td colspan="7"><div class="empty-state"><div class="loading-spinner" style="margin:0 auto"></div></div></td></tr>
-            </tbody>
-          </table>
+        <div class="sidebar-actions">
+          <button class="sidebar-action-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">🌙 Theme</button>
+          <button class="sidebar-action-btn logout-btn" onclick="handleLogout()" title="Sign out">↩ Sign out</button>
         </div>
       </div>
     </div>
 
-    <!-- SETUP SECTION -->
-    <div id="section-setup" style="display:none">
-      <div class="page-header">
-        <h1 class="page-title">Setup</h1>
-        <p class="page-sub">Connect your form to start receiving qualified leads</p>
-      </div>
-      <div class="setup-banner">
-        <h3>🚀 You're almost live!</h3>
-        <p>Share your unique form link with applicants. Add it to your Rightmove profile, website, or listings.</p>
-        <div class="setup-steps">
-          <div class="setup-step"><div class="setup-step-num">1</div>Copy your unique form URL below</div>
-          <div class="setup-step"><div class="setup-step-num">2</div>Add it to your Rightmove profile under "Contact details"</div>
-          <div class="setup-step"><div class="setup-step-num">3</div>Applicants fill the form → AI qualifies → You get notified</div>
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-title" id="topbar-title">Lead Dashboard</span>
+          <span class="topbar-badge" id="topbar-badge">Live</span>
         </div>
-        <div class="copy-url-box">
-          <span class="copy-url-text" id="form-url-display">Loading your form URL...</span>
-          <button class="copy-btn" onclick="copyFormUrl()">Copy</button>
+        <div class="topbar-right">
+          <button class="topbar-btn" onclick="loadLeads()" title="Refresh">↻</button>
         </div>
       </div>
-      <div class="leads-card" style="padding:28px">
-        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;color:var(--gray-900);margin-bottom:16px">How it works</h3>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-          <div style="padding:20px;background:var(--gray-50);border-radius:12px;border:1px solid var(--gray-200)">
-            <div style="font-size:24px;margin-bottom:10px">📋</div>
-            <div style="font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:5px">Applicant fills form</div>
-            <div style="font-size:13px;color:var(--muted)">They submit name, income, employment, right to rent and message</div>
+      <div class="content">
+
+        <!-- LEADS SECTION -->
+        <div id="section-leads">
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-header"><span class="stat-label">Total Leads</span><div class="stat-icon si-blue">📋</div></div>
+              <div class="stat-num" id="stat-total">—</div>
+              <div class="stat-sub"><span class="stat-dot" style="background:var(--gold)"></span>All enquiries received</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><span class="stat-label">Qualified</span><div class="stat-icon si-green">✅</div></div>
+              <div class="stat-num" id="stat-qualified" style="color:var(--green)">—</div>
+              <div class="stat-sub"><span class="stat-dot" style="background:var(--green)"></span>Ready for viewing</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><span class="stat-label">Pending</span><div class="stat-icon si-amber">⏳</div></div>
+              <div class="stat-num" id="stat-pending" style="color:var(--amber)">—</div>
+              <div class="stat-sub"><span class="stat-dot" style="background:var(--amber)"></span>Awaiting review</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><span class="stat-label">Rejected</span><div class="stat-icon si-red">❌</div></div>
+              <div class="stat-num" id="stat-rejected" style="color:var(--red)">—</div>
+              <div class="stat-sub"><span class="stat-dot" style="background:var(--red)"></span>Automatically filtered</div>
+            </div>
           </div>
-          <div style="padding:20px;background:var(--gray-50);border-radius:12px;border:1px solid var(--gray-200)">
-            <div style="font-size:24px;margin-bottom:10px">🤖</div>
-            <div style="font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:5px">AI qualifies instantly</div>
-            <div style="font-size:13px;color:var(--muted)">Income 30× check, right to rent, student detection, urgency scoring</div>
-          </div>
-          <div style="padding:20px;background:var(--gray-50);border-radius:12px;border:1px solid var(--gray-200)">
-            <div style="font-size:24px;margin-bottom:10px">📥</div>
-            <div style="font-size:14px;font-weight:600;color:var(--gray-900);margin-bottom:5px">You see results here</div>
-            <div style="font-size:13px;color:var(--muted)">Qualified leads appear in your dashboard with full AI analysis</div>
+
+          <div class="leads-panel">
+            <div class="panel-header">
+              <div class="panel-header-left">
+                <h3>Applicant Leads</h3>
+                <p>Click any row to view the full AI qualification report</p>
+              </div>
+              <div class="filter-row">
+                <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
+                <button class="filter-btn" onclick="filterLeads('Qualified',this)">✅ Qualified</button>
+                <button class="filter-btn" onclick="filterLeads('Pending',this)">⏳ Pending</button>
+                <button class="filter-btn" onclick="filterLeads('Rejected',this)">❌ Rejected</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Applicant</th>
+                    <th>Monthly Budget</th>
+                    <th>Location</th>
+                    <th>Employment</th>
+                    <th>AI Score</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="leads-tbody">
+                  <tr><td colspan="7"><div class="empty-state"><div class="loading-spinner" style="margin:0 auto"></div></div></td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
+
+        <!-- SETUP SECTION -->
+        <div id="section-setup" style="display:none">
+          <div class="setup-banner">
+            <h3>🚀 Connect RentSift to your listings</h3>
+            <p>Share your unique applicant form link on your Rightmove profile or property listings. Every submission is automatically qualified by our AI.</p>
+            <div class="setup-steps">
+              <div class="setup-step"><div class="setup-step-num">1</div>Copy your unique form URL below</div>
+              <div class="setup-step"><div class="setup-step-num">2</div>Add it to your Rightmove profile under "Contact details" or "Website"</div>
+              <div class="setup-step"><div class="setup-step-num">3</div>Applicants submit enquiries → AI qualifies → results appear in your dashboard</div>
+            </div>
+            <div class="url-copy-box">
+              <span class="url-text" id="form-url-display">Loading your unique form URL...</span>
+              <button class="copy-btn" onclick="copyFormUrl()">Copy URL</button>
+            </div>
+          </div>
+          <div class="info-cards">
+            <div class="info-card"><div class="info-card-icon">📋</div><h4>Applicant submits</h4><p>They complete a structured form with income, employment, right to rent status, and message. Takes under two minutes.</p></div>
+            <div class="info-card"><div class="info-card-icon">🤖</div><h4>AI qualifies instantly</h4><p>Income 30× rule, right to rent check, student detection, urgency scoring — all in seconds, 24 hours a day.</p></div>
+            <div class="info-card"><div class="info-card-icon">📥</div><h4>Results in your dashboard</h4><p>Qualified leads appear here with full AI analysis. You only speak to serious, eligible applicants.</p></div>
+          </div>
+        </div>
+
+        <!-- ACCOUNT SECTION -->
+        <div id="section-account" style="display:none">
+          <div class="account-grid">
+            <div class="account-card">
+              <h4>Your Subscription</h4>
+              <div class="plan-badge-card">
+                <span class="plan-badge-name">Professional Plan</span>
+                <span class="plan-badge-status">Active</span>
+              </div>
+              <div class="account-detail-row"><span class="account-detail-label">Listings included</span><span class="account-detail-value">5 active listings</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Monthly applicants</span><span class="account-detail-value">500 applicants</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Billing cycle</span><span class="account-detail-value">Monthly</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Monthly fee</span><span class="account-detail-value">£199</span></div>
+            </div>
+            <div class="account-card">
+              <h4>Account Details</h4>
+              <div class="account-detail-row"><span class="account-detail-label">Email address</span><span class="account-detail-value" id="account-email">—</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Account status</span><span class="account-detail-value" style="color:var(--green)">Active</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Support</span><span class="account-detail-value"><a href="mailto:hello@rentsift.co.uk" style="color:var(--gold)">hello@rentsift.co.uk</a></span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Data compliance</span><span class="account-detail-value">UK GDPR</span></div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
-
-    <!-- ACCOUNT SECTION -->
-    <div id="section-account" style="display:none">
-      <div class="page-header">
-        <h1 class="page-title">Account</h1>
-        <p class="page-sub">Manage your subscription and settings</p>
-      </div>
-      <div class="leads-card" style="padding:28px">
-        <h3 style="font-family:'Bricolage Grotesque',sans-serif;font-size:17px;font-weight:700;color:var(--gray-900);margin-bottom:20px">Your subscription</h3>
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:16px;background:var(--blue-pale);border:1px solid var(--blue-border);border-radius:12px;margin-bottom:20px">
-          <div>
-            <div style="font-size:15px;font-weight:600;color:var(--gray-900)">Pro Plan</div>
-            <div style="font-size:13px;color:var(--muted)">5 listings · 500 leads/month · £199/mo</div>
-          </div>
-          <div style="background:var(--blue);color:white;padding:5px 14px;border-radius:7px;font-size:12px;font-weight:600">Active</div>
-        </div>
-        <div style="font-size:13px;color:var(--muted)">To manage your subscription, cancel, or upgrade, contact us at <a href="mailto:hello@nexusautonoma.com" style="color:var(--blue)">hello@nexusautonoma.com</a></div>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- LEAD DETAIL MODAL -->
+<!-- MODAL -->
 <div class="modal-overlay" id="modal" onclick="closeModal(event)">
   <div class="modal" id="modal-content"></div>
 </div>
 
-<!-- Toast -->
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CONFIG ── Replace with your Supabase credentials
 const SUPABASE_URL = 'https://zqwfrgphpefdexlokkvz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpxd2ZyZ3BocGVmZGV4bG9ra3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NTgzMTQsImV4cCI6MjA5NDMzNDMxNH0.gk0mlANr7YsKbhgMBaEaEWDBK9iZU2PXRmF8u5AhPvA';
-const FORM_BASE_URL = 'https://nexusautonoma.vercel.app/form';
+const FORM_BASE_URL = 'https://rentsift.co.uk/form';
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -392,34 +503,31 @@ let allLeads = [];
 let currentFilter = 'all';
 let currentUser = null;
 
-// ── INIT ──
 async function init(){
+  const saved = localStorage.getItem('theme');
+  if(saved){ document.documentElement.setAttribute('data-theme',saved); document.getElementById('theme-btn').textContent = saved==='dark'?'☀️ Theme':'🌙 Theme'; }
   const { data: { session } } = await sb.auth.getSession();
-  if(session){
-    currentUser = session.user;
-    showDashboard();
-  } else {
-    showAuth();
-  }
-  document.getElementById('loading').style.display='none';
+  if(session){ currentUser = session.user; showDashboard(); }
+  else { showAuth(); }
+  document.getElementById('app-loading').style.display='none';
 }
 
 function showAuth(){
-  document.getElementById('auth-page').style.display='flex';
-  document.getElementById('dashboard').style.display='none';
+  document.getElementById('auth-view').style.display='flex';
+  document.getElementById('dash-view').style.display='none';
 }
 
 async function showDashboard(){
-  document.getElementById('auth-page').style.display='none';
-  document.getElementById('dashboard').style.display='block';
+  document.getElementById('auth-view').style.display='none';
+  document.getElementById('dash-view').style.display='block';
   const email = currentUser.email;
   document.getElementById('user-email-display').textContent = email;
   document.getElementById('user-av').textContent = email[0].toUpperCase();
+  document.getElementById('account-email').textContent = email;
   document.getElementById('form-url-display').textContent = `${FORM_BASE_URL}?agent=${currentUser.id}`;
   await loadLeads();
 }
 
-// ── AUTH ──
 function toggleForm(type){
   document.getElementById('login-form').style.display = type==='login'?'block':'none';
   document.getElementById('register-form').style.display = type==='register'?'block':'none';
@@ -429,11 +537,11 @@ async function handleLogin(){
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-password').value;
   const btn = document.getElementById('login-btn');
-  const err = document.getElementById('auth-error');
+  const err = document.getElementById('login-error');
   err.style.display='none';
   btn.disabled=true; btn.textContent='Signing in...';
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if(error){ err.textContent=error.message; err.style.display='block'; btn.disabled=false; btn.textContent='Sign in'; return; }
+  if(error){ err.textContent=error.message; err.style.display='block'; btn.disabled=false; btn.textContent='Sign in to dashboard'; return; }
   currentUser = data.user;
   showDashboard();
 }
@@ -449,7 +557,7 @@ async function handleRegister(){
   if(error){ err.textContent=error.message; err.style.display='block'; btn.disabled=false; btn.textContent='Create account'; return; }
   currentUser = data.user;
   showDashboard();
-  showToast('✅ Account created! Welcome to NexusAutonoma.');
+  showToast('✓ Account created. Welcome to RentSift.');
 }
 
 async function handleLogout(){
@@ -458,13 +566,13 @@ async function handleLogout(){
   showAuth();
 }
 
-// ── LEADS ──
 async function loadLeads(){
   const { data, error } = await sb.from('leads').select('*').order('created_at', { ascending: false });
   if(error){ console.error(error); return; }
   allLeads = data || [];
   updateStats();
   renderLeads();
+  document.getElementById('nav-badge').textContent = allLeads.filter(l=>l.status==='Qualified').length;
 }
 
 function updateStats(){
@@ -476,7 +584,7 @@ function updateStats(){
 
 function filterLeads(filter, btn){
   currentFilter = filter;
-  document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.filter-btn').forEach(t=>t.classList.remove('active'));
   btn.classList.add('active');
   renderLeads();
 }
@@ -489,17 +597,17 @@ function renderLeads(){
     return;
   }
   tbody.innerHTML = leads.map(l => {
-    const scoreClass = l.score>=75?'sc-q':l.score>=40?'sc-p':'sc-r';
-    const statusClass = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
-    const date = l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '—';
+    const sc = (l.score||0)>=75?'sc-q':(l.score||0)>=40?'sc-p':'sc-r';
+    const st = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
+    const date = l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}) : '—';
     return `<tr onclick="openModal('${l.id}')">
-      <td><div class="td-name">${l.name||'—'}</div><div class="td-meta">${l.email||''}</div></td>
-      <td>${l.budget ? '£'+l.budget+'/mo' : '—'}</td>
+      <td><div class="td-primary">${l.name||'—'}</div><div class="td-secondary">${l.email||''}</div></td>
+      <td>${l.budget?'£'+l.budget+'/mo':'—'}</td>
       <td>${l.region||'—'}</td>
       <td>${l.employment||'—'}</td>
-      <td><span class="score-chip ${scoreClass}">${l.score||'—'}</span></td>
-      <td><span class="status-chip ${statusClass}">${l.status||'—'}</span></td>
-      <td>${date}</td>
+      <td><span class="score-chip ${sc}">${l.score||'—'}/100</span></td>
+      <td><span class="status-chip ${st}">${l.status||'—'}</span></td>
+      <td style="color:var(--muted);font-size:12px">${date}</td>
     </tr>`;
   }).join('');
 }
@@ -507,53 +615,54 @@ function renderLeads(){
 function openModal(id){
   const l = allLeads.find(x=>x.id===id);
   if(!l) return;
-  const scoreClass = l.score>=75?'sc-circle-q':l.score>=40?'sc-circle-p':'sc-circle-r';
-  const statusClass = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
+  const sc = (l.score||0)>=75?'sc-circle-q':(l.score||0)>=40?'sc-circle-p':'sc-circle-r';
+  const st = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
   document.getElementById('modal-content').innerHTML = `
     <div class="modal-header">
-      <div class="modal-title">${l.name||'Lead Details'}</div>
+      <div><div class="modal-title">${l.name||'Lead Details'}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${l.email||''}</div></div>
       <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
     </div>
-    <div class="modal-score">
-      <div class="score-circle ${scoreClass}">${l.score||'—'}</div>
+    <div class="score-banner">
+      <div class="score-circle ${sc}">${l.score||'—'}</div>
       <div class="score-info">
         <h4>AI Qualification Score</h4>
-        <p><span class="status-chip ${statusClass}">${l.status||'—'}</span></p>
+        <span class="status-chip ${st}" style="margin-top:4px;display:inline-flex">${l.status||'—'}</span>
       </div>
     </div>
     <div class="modal-section">
-      <div class="modal-section-title">Applicant Details</div>
+      <div class="modal-section-label">Applicant Details</div>
       <div class="detail-grid">
         <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${l.email||'—'}</div></div>
         <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">${l.phone||'—'}</div></div>
         <div class="detail-item"><div class="detail-label">Monthly Budget</div><div class="detail-value">${l.budget?'£'+l.budget:'—'}</div></div>
         <div class="detail-item"><div class="detail-label">Annual Income</div><div class="detail-value">${l.annual_income?'£'+l.annual_income:'—'}</div></div>
         <div class="detail-item"><div class="detail-label">Employment</div><div class="detail-value">${l.employment||'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value">${l.region||'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Location / Postcode</div><div class="detail-value">${l.region||'—'}</div></div>
         <div class="detail-item"><div class="detail-label">Right to Rent</div><div class="detail-value">${l.right_to_rent||'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Date</div><div class="detail-value">${l.created_at?new Date(l.created_at).toLocaleDateString('en-GB'):'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Received</div><div class="detail-value">${l.created_at?new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—'}</div></div>
       </div>
     </div>
-    ${l.message?`<div class="modal-section"><div class="modal-section-title">Applicant Message</div><div class="message-box">"${l.message}"</div></div>`:''}
-    ${l.analysis?`<div class="modal-section"><div class="modal-section-title">AI Analysis</div><div class="ai-analysis-box"><div class="ai-analysis-label">✦ Nexus Autonoma AI</div><div class="ai-analysis-text">${l.analysis}</div></div></div>`:''}
+    ${l.message?`<div class="modal-section"><div class="modal-section-label">Applicant Message</div><div class="message-box">"${l.message}"</div></div>`:''}
+    ${l.analysis?`<div class="modal-section"><div class="modal-section-label">AI Analysis</div><div class="ai-box"><div class="ai-box-label">✦ RentSift AI</div><div class="ai-box-text">${l.analysis}</div></div></div>`:''}
   `;
   document.getElementById('modal').classList.add('open');
 }
 
-function closeModal(e){
-  if(e.target===document.getElementById('modal')) document.getElementById('modal').classList.remove('open');
-}
+function closeModal(e){ if(e.target===document.getElementById('modal')) document.getElementById('modal').classList.remove('open'); }
 
-function showSection(name){
-  document.querySelectorAll('.main > div[id^="section-"]').forEach(s=>s.style.display='none');
+function showSection(name, btn){
+  document.querySelectorAll('.content > div[id^="section-"]').forEach(s=>s.style.display='none');
   document.getElementById('section-'+name).style.display='block';
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  event.currentTarget.classList.add('active');
+  if(btn) btn.classList.add('active');
+  const titles = {leads:'Lead Dashboard',setup:'Setup & Integration',account:'My Account'};
+  document.getElementById('topbar-title').textContent = titles[name]||'Dashboard';
+  document.getElementById('topbar-badge').textContent = name==='leads'?'Live':'';
 }
 
 function copyFormUrl(){
   const url = document.getElementById('form-url-display').textContent;
-  navigator.clipboard.writeText(url).then(()=>showToast('✅ Form URL copied to clipboard!'));
+  navigator.clipboard.writeText(url).then(()=>showToast('✓ Form URL copied to clipboard'));
 }
 
 function showToast(msg){
@@ -561,6 +670,14 @@ function showToast(msg){
   t.textContent = msg;
   t.classList.add('show');
   setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme', isDark?'light':'dark');
+  document.getElementById('theme-btn').textContent = isDark?'🌙 Theme':'☀️ Theme';
+  localStorage.setItem('theme', isDark?'light':'dark');
 }
 
 init();
