@@ -319,11 +319,14 @@ async function submitForm() {
     agent_id: agentId
   };
   try {
-    await fetch('https://zqwfrgphpefdexlokkvz.supabase.co/functions/v1/qualify-lead', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
-    });
+  await fetch('https://zqwfrgphpefdexlokkvz.supabase.co/functions/v1/qualify-lead', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpxd2ZyZ3BocGVmZGV4bG9ra3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NTgzMTQsImV4cCI6MjA5NDMzNDMxNH0.gk0mlANr7YsKbhgMBaEaEWDBK9iZU2PXRmF8u5AhPvA'
+    },
+    body: JSON.stringify(payload)
+  });
     document.getElementById('apply-form').style.display = 'none';
     document.querySelector('.progress-bar').style.display = 'none';
     document.querySelector('.page-header').style.display = 'none';
