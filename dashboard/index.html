@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RentSift — Agent Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 36 36'><rect width='36' height='36' rx='8' fill='%230f1f3d'/><path d='M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z' fill='%23d4a017'/><rect x='9' y='19' width='18' height='3' rx='1.5' fill='%23d4a017' opacity='.8'/><rect x='11' y='23' width='14' height='7' rx='2' fill='%23d4a017' opacity='.6'/><rect x='9' y='28' width='18' height='2' rx='1' fill='%23d4a017'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fafaf7;
+  --bg2:#f4f3ee;
+  --surface:#ffffff;
+  --surface2:#f8f7f2;
+  --border:#e8e6df;
+  --border2:#d4d1c8;
+  --text:#1a1a14;
+  --text2:#4a4a3e;
+  --muted:#8a8a7a;
+  --gold:#b8860b;
+  --gold-light:#d4a017;
+  --gold-pale:#fdf8ee;
+  --gold-border:#e8d5a0;
+  --navy:#0f1f3d;
+  --navy2:#1a3260;
+  --green:#059669;
+  --green-pale:#ecfdf5;
+  --green-border:#a7f3d0;
+  --amber:#d97706;
+  --amber-pale:#fffbeb;
+  --amber-border:#fde68a;
+  --red:#dc2626;
+  --red-pale:#fef2f2;
+  --red-border:#fecaca;
+  --sidebar-w:256px;
+}
+[data-theme="dark"]{
+  --bg:#0d0d0a;
+  --bg2:#141410;
+  --surface:#1a1a14;
+  --surface2:#202018;
+  --border:#2a2a22;
+  --border2:#3a3a2e;
+  --text:#f0efe8;
+  --text2:#c8c8b4;
+  --muted:#6a6a5a;
+  --gold:#d4a017;
+  --gold-light:#e8b820;
+  --gold-pale:#1a180e;
+  --gold-border:#3a3018;
+  --navy:#1a2d4d;
+  --navy2:#243d66;
+  --green-pale:#052e16;
+  --green-border:#166534;
+  --amber-pale:#1c1200;
+  --amber-border:#78350f;
+  --red-pale:#1c0000;
+  --red-border:#7f1d1d;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+
+/* ── LOADING ── */
+#app-loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:20px}
+.loading-logo{display:flex;align-items:center;gap:12px}
+.loading-logo-icon svg{width:40px;height:40px}
+.loading-logo-name{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--text);letter-spacing:0.5px}
+.loading-spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── AUTH ── */
+#auth-view{display:none;min-height:100vh;overflow-y:auto;align-items:center;justify-content:center;background:linear-height(135deg,var(--bg) 0%,var(--bg2) 100%);padding:40px 20px;position:relative}
+#auth-view::before{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,var(--gold-pale));opacity:.5;pointer-events:none}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:48px;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,0.08);position:relative;z-index:2}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:36px;text-decoration:none}
+.auth-logo svg{width:36px;height:36px}
+.auth-logo-text{display:flex;flex-direction:column;line-height:1}
+.auth-logo-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text);letter-spacing:0.5px}
+.auth-logo-tag{font-size:9px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+.auth-eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.auth-eyebrow-line{width:24px;height:1px;background:var(--gold)}
+.auth-eyebrow-text{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:2.5px;color:var(--gold)}
+.auth-title{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:var(--text);letter-spacing:-0.5px;margin-bottom:6px}
+.auth-sub{font-size:14px;color:var(--muted);margin-bottom:28px}
+.auth-error{background:var(--red-pale);border:1px solid var(--red-border);color:var(--red);padding:11px 14px;border-radius:8px;font-size:13px;margin-bottom:16px;display:none}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px}
+.form-group input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s,box-shadow .2s}
+.form-group input:focus{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold-pale)}
+.auth-btn{width:100%;background:var(--navy);color:white;padding:13px;border-radius:8px;font-size:15px;font-weight:600;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;letter-spacing:0.3px;margin-top:4px}
+.auth-btn:hover{background:var(--gold);transform:translateY(-1px);box-shadow:0 4px 20px rgba(184,134,11,0.3)}
+.auth-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.auth-toggle{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
+.auth-toggle a{color:var(--gold);font-weight:500;cursor:pointer;text-decoration:none}
+.auth-divider{display:flex;align-items:center;gap:10px;margin:20px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* ── DASHBOARD LAYOUT ── */
+#dash-view{display:none;height:100vh;overflow:hidden}
+.dash-layout{display:flex;height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:var(--sidebar-w);background:var(--navy);border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;flex-shrink:0;transition:background .3s}
+.sidebar-header{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.06)}
+.sidebar-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.sidebar-brand svg{width:30px;height:30px;flex-shrink:0}
+.sidebar-brand-text{display:flex;flex-direction:column;line-height:1}
+.sidebar-brand-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:white;letter-spacing:0.5px}
+.sidebar-brand-tag{font-size:8px;font-weight:600;color:var(--gold-light);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+.sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}
+.nav-section-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,0.25);padding:0 10px;margin:16px 0 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;transition:all .15s;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);text-decoration:none;margin-bottom:2px;border:none;background:none;width:100%;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.9)}
+.nav-item.active{background:rgba(212,160,23,0.15);color:var(--gold-light);border:1px solid rgba(212,160,23,0.2)}
+.nav-icon{font-size:15px;width:20px;text-align:center;flex-shrink:0}
+.nav-item-badge{margin-left:auto;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;padding:2px 7px;border-radius:100px}
+.sidebar-bottom{padding:16px 12px;border-top:1px solid rgba(255,255,255,0.06)}
+.user-block{display:flex;align-items:center;gap:10px;padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08)}
+.user-av{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,var(--gold),var(--gold-light));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:16px;font-weight:700;color:var(--navy);flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-email{font-size:11px;font-weight:500;color:rgba(255,255,255,0.7);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.user-plan{font-size:10px;color:rgba(255,255,255,0.35);margin-top:1px}
+.sidebar-actions{display:flex;gap:6px;margin-top:8px}
+.sidebar-action-btn{flex:1;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);padding:7px;border-radius:7px;font-size:12px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif}
+.sidebar-action-btn:hover{background:rgba(255,255,255,0.1);color:white}
+.logout-btn:hover{background:rgba(220,38,38,0.15);border-color:rgba(220,38,38,0.3);color:#f87171}
+
+/* MAIN */
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.topbar{height:60px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:var(--surface);flex-shrink:0;transition:background .3s,border-color .3s}
+.topbar-left{display:flex;align-items:center;gap:12px}
+.topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.topbar-badge{font-size:11px;font-weight:600;background:var(--gold-pale);color:var(--gold);border:1px solid var(--gold-border);padding:3px 10px;border-radius:100px;letter-spacing:0.3px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.topbar-btn{background:var(--surface2);border:1px solid var(--border);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;color:var(--text2)}
+.topbar-btn:hover{border-color:var(--gold);color:var(--gold)}
+.content{flex:1;overflow-y:auto;padding:28px}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;transition:all .2s;cursor:default}
+.stat-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.06);transform:translateY(-1px)}
+.stat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
+.stat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.si-blue{background:var(--gold-pale);border:1px solid var(--gold-border)}
+.si-green{background:var(--green-pale);border:1px solid var(--green-border)}
+.si-amber{background:var(--amber-pale);border:1px solid var(--amber-border)}
+.si-red{background:var(--red-pale);border:1px solid var(--red-border)}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:38px;font-weight:700;color:var(--text);letter-spacing:-1.5px;line-height:1}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:5px}
+.stat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* LEADS TABLE */
+.leads-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:background .3s,border-color .3s}
+.panel-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.panel-header-left h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text)}
+.panel-header-left p{font-size:12px;color:var(--muted);margin-top:1px}
+.filter-row{display:flex;gap:4px}
+.filter-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;font-family:'DM Sans',sans-serif;letter-spacing:0.2px}
+.filter-btn:hover{background:var(--bg2);color:var(--text)}
+.filter-btn.active{background:var(--navy);color:white;border-color:var(--navy)}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead tr{background:var(--bg2);border-bottom:1px solid var(--border)}
+th{padding:10px 16px;text-align:left;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;white-space:nowrap}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s;cursor:pointer}
+tbody tr:hover{background:var(--gold-pale)}
+tbody tr:last-child{border-bottom:none}
+td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
+.td-primary{font-weight:600;color:var(--text);font-size:14px}
+.td-secondary{font-size:11px;color:var(--muted);margin-top:1px}
+.score-chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:0.3px}
+.sc-q{background:var(--green-pale);color:var(--green);border:1px solid var(--green-border)}
+.sc-p{background:var(--amber-pale);color:var(--amber);border:1px solid var(--amber-border)}
+.sc-r{background:var(--red-pale);color:var(--red);border:1px solid var(--red-border)}
+.status-chip{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600}
+.st-q{background:var(--green-pale);color:var(--green)}
+.st-p{background:var(--amber-pale);color:var(--amber)}
+.st-r{background:var(--red-pale);color:var(--red)}
+.empty-state{text-align:center;padding:64px 24px}
+.empty-icon{font-size:36px;margin-bottom:14px;opacity:.5}
+.empty-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:13px;color:var(--muted)}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:36px;max-width:580px;width:100%;box-shadow:0 24px 80px rgba(0,0,0,0.15);max-height:90vh;overflow-y:auto}
+.modal-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:12px}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--text);letter-spacing:-0.5px}
+.modal-close{background:var(--bg2);border:1px solid var(--border);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;color:var(--muted)}
+.modal-close:hover{background:var(--red-pale);border-color:var(--red-border);color:var(--red)}
+.score-banner{display:flex;align-items:center;gap:16px;padding:18px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:24px}
+.score-circle{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:700;flex-shrink:0}
+.sc-circle-q{background:var(--green-pale);color:var(--green);border:2px solid var(--green-border)}
+.sc-circle-p{background:var(--amber-pale);color:var(--amber);border:2px solid var(--amber-border)}
+.sc-circle-r{background:var(--red-pale);color:var(--red);border:2px solid var(--red-border)}
+.score-info h4{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:4px}
+.modal-section{margin-bottom:22px}
+.modal-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.modal-section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-item{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+.detail-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:4px}
+.detail-value{font-size:14px;font-weight:500;color:var(--text)}
+.ai-box{background:var(--gold-pale);border:1px solid var(--gold-border);border-radius:12px;padding:16px}
+.ai-box-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gold);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ai-box-text{font-size:13px;color:var(--text2);line-height:1.7}
+.message-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7;font-style:italic}
+
+/* SETUP PAGE */
+.setup-banner{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);border-radius:14px;padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden}
+.setup-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(212,160,23,0.15),transparent);pointer-events:none}
+.setup-banner h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:white;margin-bottom:6px}
+.setup-banner p{font-size:14px;color:rgba(255,255,255,0.65);margin-bottom:20px;line-height:1.6}
+.setup-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+.setup-step{display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,0.8)}
+.setup-step-num{width:24px;height:24px;border-radius:50%;background:rgba(212,160,23,0.2);border:1px solid rgba(212,160,23,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold-light);flex-shrink:0}
+.url-copy-box{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.url-text{font-size:12px;color:rgba(255,255,255,0.75);font-family:monospace;word-break:break-all}
+.copy-btn{background:var(--gold);color:var(--navy);padding:7px 16px;border-radius:7px;font-size:12px;font-weight:700;border:none;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'DM Sans',sans-serif}
+.copy-btn:hover{background:var(--gold-light);transform:translateY(-1px)}
+.info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.info-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .2s}
+.info-card:hover{border-color:var(--gold-border);box-shadow:0 4px 20px rgba(184,134,11,0.06)}
+.info-card-icon{font-size:24px;margin-bottom:12px}
+.info-card h4{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);margin-bottom:6px}
+.info-card p{font-size:13px;color:var(--muted);line-height:1.65}
+
+/* ACCOUNT PAGE */
+.account-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.account-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .2s}
+.account-card h4{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.plan-badge-card{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--gold-pale);border:1px solid var(--gold-border);border-radius:10px;margin-bottom:14px}
+.plan-badge-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text)}
+.plan-badge-status{font-size:11px;font-weight:700;background:var(--green-pale);color:var(--green);border:1px solid var(--green-border);padding:4px 12px;border-radius:100px}
+.account-detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.account-detail-row:last-child{border-bottom:none}
+.account-detail-label{color:var(--muted)}
+.account-detail-value{font-weight:500;color:var(--text)}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
+.toast.show{transform:translateY(0);opacity:1}
+
+@media(max-width:768px){
+  .sidebar{display:none}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .detail-grid,.info-cards,.account-grid{grid-template-columns:1fr}
+  .content{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="app-loading">
+  <div class="loading-logo">
+    <div class="loading-logo-icon">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="8" fill="#0f1f3d"/>
+        <path d="M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z" fill="#d4a017"/>
+        <rect x="9" y="19" width="18" height="3" rx="1.5" fill="#d4a017" opacity="0.8"/>
+        <rect x="11" y="23" width="14" height="7" rx="2" fill="#d4a017" opacity="0.6"/>
+        <rect x="9" y="28" width="18" height="2" rx="1" fill="#d4a017"/>
+      </svg>
+    </div>
+    <span class="loading-logo-name">RentSift</span>
+  </div>
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- AUTH -->
+<div id="auth-view" style="display:none;min-height:100vh;overflow-y:auto;align-items:center;justify-content:center;background:var(--bg);padding:40px 20px;position:relative">
+  <div class="auth-card">
+    <a href="https://rentsift.co.uk" class="auth-logo">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="8" fill="#0f1f3d"/>
+        <path d="M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z" fill="#d4a017"/>
+        <rect x="9" y="19" width="18" height="3" rx="1.5" fill="#d4a017" opacity="0.8"/>
+        <rect x="11" y="23" width="14" height="7" rx="2" fill="#d4a017" opacity="0.6"/>
+        <rect x="9" y="28" width="18" height="2" rx="1" fill="#d4a017"/>
+      </svg>
+      <div class="auth-logo-text">
+        <span class="auth-logo-name">RentSift</span>
+        <span class="auth-logo-tag">Agent Dashboard</span>
+      </div>
+    </a>
+
+    <div id="login-form">
+      <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Secure Access</span></div>
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-sub">Sign in to your letting agent dashboard</p>
+      <div class="auth-error" id="login-error"></div>
+      <div class="form-group"><label>Email address</label><input type="email" id="login-email" placeholder="jane@agency.co.uk" autocomplete="email"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password"></div>
+      <button class="auth-btn" id="login-btn" onclick="handleLogin()">Sign in to dashboard</button>
+      <div class="auth-toggle">New to RentSift? <a onclick="toggleForm('register')">Create your account</a></div>
+    </div>
+
+    <div id="register-form" style="display:none">
+      <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Get Started</span></div>
+      <h1 class="auth-title">Create account</h1>
+      <p class="auth-sub">Set up your RentSift dashboard to start qualifying leads</p>
+      <div class="auth-error" id="register-error"></div>
+      <div class="form-group"><label>Email address</label><input type="email" id="reg-email" placeholder="jane@agency.co.uk"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="reg-password" placeholder="Minimum 8 characters"></div>
+      <div class="form-group"><label>Agency name</label><input type="text" id="reg-agency" placeholder="London Lettings Ltd"></div>
+      <button class="auth-btn" id="register-btn" onclick="handleRegister()">Create account</button>
+      <div class="auth-toggle">Already have an account? <a onclick="toggleForm('login')">Sign in</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dash-view">
+  <div class="dash-layout">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <a href="https://rentsift.co.uk" class="sidebar-brand">
+          <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="8" fill="rgba(255,255,255,0.08)"/>
+            <path d="M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z" fill="#d4a017"/>
+            <rect x="9" y="19" width="18" height="3" rx="1.5" fill="#d4a017" opacity="0.8"/>
+            <rect x="11" y="23" width="14" height="7" rx="2" fill="#d4a017" opacity="0.6"/>
+            <rect x="9" y="28" width="18" height="2" rx="1" fill="#d4a017"/>
+          </svg>
+          <div class="sidebar-brand-text">
+            <span class="sidebar-brand-name">RentSift</span>
+            <span class="sidebar-brand-tag">Agent Portal</span>
+          </div>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <button class="nav-item active" onclick="showSection('leads',this)"><span class="nav-icon">📊</span>Lead Dashboard<span class="nav-item-badge" id="nav-badge">0</span></button>
+        <button class="nav-item" onclick="showSection('setup',this)"><span class="nav-icon">⚙️</span>Setup & Integration</button>
+        <div class="nav-section-label">Account</div>
+        <button class="nav-item" onclick="showSection('account',this)"><span class="nav-icon">👤</span>My Account</button>
+        <a class="nav-item" href="mailto:hello@rentsift.co.uk"><span class="nav-icon">✉️</span>Support</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="user-block">
+          <div class="user-av" id="user-av">?</div>
+          <div class="user-info">
+            <div class="user-email" id="user-email-display">Loading...</div>
+            <div class="user-plan">Professional Plan</div>
+          </div>
+        </div>
+        <div class="sidebar-actions">
+          <button class="sidebar-action-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">🌙 Theme</button>
+          <button class="sidebar-action-btn logout-btn" onclick="handleLogout()" title="Sign out">↩ Sign out</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN -->
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-left">
+          <span class="topbar-title" id="topbar-title">Lead Dashboard</span>
+          <span class="topbar-badge" id="topbar-badge">Live</span>
+        </div>
+        <div class="topbar-right">
+          <button class="topbar-btn" onclick="loadLeads()" title="Refresh">↻</button>
+        </div>
+      </div>
+      <div class="content">
+
+        <!-- LEADS SECTION -->
+        <div id="section-leads">
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-header"><span class="stat-label">Total Leads</span><div class="stat-icon si-blue">📋</div></div>
+              <div class="stat-num" id="stat-total">—</div>
+              <div class="stat-sub"><span class="stat-dot" style="background:var(--gold)"></span>All enquiries received</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><span class="stat-label">Qualified</span><div class="stat-icon si-green">✅</div></div>
+              <div class="stat-num" id="stat-qualified" style="color:var(--green)">—</div>
+              <div class="stat-sub"><span class="stat-dot" style="background:var(--green)"></span>Ready for viewing</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><span class="stat-label">Pending</span><div class="stat-icon si-amber">⏳</div></div>
+              <div class="stat-num" id="stat-pending" style="color:var(--amber)">—</div>
+              <div class="stat-sub"><span class="stat-dot" style="background:var(--amber)"></span>Awaiting review</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-header"><span class="stat-label">Rejected</span><div class="stat-icon si-red">❌</div></div>
+              <div class="stat-num" id="stat-rejected" style="color:var(--red)">—</div>
+              <div class="stat-sub"><span class="stat-dot" style="background:var(--red)"></span>Automatically filtered</div>
+            </div>
+          </div>
+
+          <div class="leads-panel">
+            <div class="panel-header">
+              <div class="panel-header-left">
+                <h3>Applicant Leads</h3>
+                <p>Click any row to view the full AI qualification report</p>
+              </div>
+              <div class="filter-row">
+                <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
+                <button class="filter-btn" onclick="filterLeads('Qualified',this)">✅ Qualified</button>
+                <button class="filter-btn" onclick="filterLeads('Pending',this)">⏳ Pending</button>
+                <button class="filter-btn" onclick="filterLeads('Rejected',this)">❌ Rejected</button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Applicant</th>
+                    <th>Monthly Budget</th>
+                    <th>Location</th>
+                    <th>Employment</th>
+                    <th>AI Score</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody id="leads-tbody">
+                  <tr><td colspan="7"><div class="empty-state"><div class="loading-spinner" style="margin:0 auto"></div></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETUP SECTION -->
+        <div id="section-setup" style="display:none">
+          <div class="setup-banner">
+            <h3>🚀 Connect RentSift to your listings</h3>
+            <p>Share your unique applicant form link on your Rightmove profile or property listings. Every submission is automatically qualified by our AI.</p>
+            <div class="setup-steps">
+              <div class="setup-step"><div class="setup-step-num">1</div>Copy your unique form URL below</div>
+              <div class="setup-step"><div class="setup-step-num">2</div>Add it to your Rightmove profile under "Contact details" or "Website"</div>
+              <div class="setup-step"><div class="setup-step-num">3</div>Applicants submit enquiries → AI qualifies → results appear in your dashboard</div>
+            </div>
+            <div class="url-copy-box">
+              <span class="url-text" id="form-url-display">Loading your unique form URL...</span>
+              <button class="copy-btn" onclick="copyFormUrl()">Copy URL</button>
+            </div>
+          </div>
+          <div class="info-cards">
+            <div class="info-card"><div class="info-card-icon">📋</div><h4>Applicant submits</h4><p>They complete a structured form with income, employment, right to rent status, and message. Takes under two minutes.</p></div>
+            <div class="info-card"><div class="info-card-icon">🤖</div><h4>AI qualifies instantly</h4><p>Income 30× rule, right to rent check, student detection, urgency scoring — all in seconds, 24 hours a day.</p></div>
+            <div class="info-card"><div class="info-card-icon">📥</div><h4>Results in your dashboard</h4><p>Qualified leads appear here with full AI analysis. You only speak to serious, eligible applicants.</p></div>
+          </div>
+        </div>
+
+        <!-- ACCOUNT SECTION -->
+        <div id="section-account" style="display:none">
+          <div class="account-grid">
+            <div class="account-card">
+              <h4>Your Subscription</h4>
+              <div class="plan-badge-card">
+                <span class="plan-badge-name">Professional Plan</span>
+                <span class="plan-badge-status">Active</span>
+              </div>
+              <div class="account-detail-row"><span class="account-detail-label">Listings included</span><span class="account-detail-value">5 active listings</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Monthly applicants</span><span class="account-detail-value">500 applicants</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Billing cycle</span><span class="account-detail-value">Monthly</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Monthly fee</span><span class="account-detail-value">£199</span></div>
+            </div>
+            <div class="account-card">
+              <h4>Account Details</h4>
+              <div class="account-detail-row"><span class="account-detail-label">Email address</span><span class="account-detail-value" id="account-email">—</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Account status</span><span class="account-detail-value" style="color:var(--green)">Active</span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Support</span><span class="account-detail-value"><a href="mailto:hello@rentsift.co.uk" style="color:var(--gold)">hello@rentsift.co.uk</a></span></div>
+              <div class="account-detail-row"><span class="account-detail-label">Data compliance</span><span class="account-detail-value">UK GDPR</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+const SUPABASE_URL = 'https://zqwfrgphpefdexlokkvz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpxd2ZyZ3BocGVmZGV4bG9ra3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NTgzMTQsImV4cCI6MjA5NDMzNDMxNH0.gk0mlANr7YsKbhgMBaEaEWDBK9iZU2PXRmF8u5AhPvA';
+const FORM_BASE_URL = 'https://rentsift.co.uk/form';
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let allLeads = [];
+let currentFilter = 'all';
+let currentUser = null;
+
+async function init(){
+  const saved = localStorage.getItem('theme');
+  if(saved){ document.documentElement.setAttribute('data-theme',saved); document.getElementById('theme-btn').textContent = saved==='dark'?'☀️ Theme':'🌙 Theme'; }
+  const { data: { session } } = await sb.auth.getSession();
+  if(session){ currentUser = session.user; showDashboard(); }
+  else { showAuth(); }
+  document.getElementById('app-loading').style.display='none';
+}
+
+function showAuth(){
+  document.getElementById('auth-view').style.display='flex';
+  document.getElementById('dash-view').style.display='none';
+}
+
+async function showDashboard(){
+  document.getElementById('auth-view').style.display='none';
+  document.getElementById('dash-view').style.display='block';
+  const email = currentUser.email;
+  document.getElementById('user-email-display').textContent = email;
+  document.getElementById('user-av').textContent = email[0].toUpperCase();
+  document.getElementById('account-email').textContent = email;
+  document.getElementById('form-url-display').textContent = `${FORM_BASE_URL}?agent=${currentUser.id}`;
+  await loadLeads();
+}
+
+function toggleForm(type){
+  document.getElementById('login-form').style.display = type==='login'?'block':'none';
+  document.getElementById('register-form').style.display = type==='register'?'block':'none';
+}
+
+async function handleLogin(){
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-password').value;
+  const btn = document.getElementById('login-btn');
+  const err = document.getElementById('login-error');
+  err.style.display='none';
+  btn.disabled=true; btn.textContent='Signing in...';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if(error){ err.textContent=error.message; err.style.display='block'; btn.disabled=false; btn.textContent='Sign in to dashboard'; return; }
+  currentUser = data.user;
+  showDashboard();
+}
+
+async function handleRegister(){
+  const email = document.getElementById('reg-email').value;
+  const password = document.getElementById('reg-password').value;
+  const btn = document.getElementById('register-btn');
+  const err = document.getElementById('register-error');
+  err.style.display='none';
+  btn.disabled=true; btn.textContent='Creating account...';
+  const { data, error } = await sb.auth.signUp({ email, password });
+  if(error){ err.textContent=error.message; err.style.display='block'; btn.disabled=false; btn.textContent='Create account'; return; }
+  currentUser = data.user;
+  showDashboard();
+  showToast('✓ Account created. Welcome to RentSift.');
+}
+
+async function handleLogout(){
+  await sb.auth.signOut();
+  currentUser = null;
+  showAuth();
+}
+
+async function loadLeads(){
+  const { data, error } = await sb.from('leads').select('*').order('created_at', { ascending: false });
+  if(error){ console.error(error); return; }
+  allLeads = data || [];
+  updateStats();
+  renderLeads();
+  document.getElementById('nav-badge').textContent = allLeads.filter(l=>l.status==='Qualified').length;
+}
+
+function updateStats(){
+  document.getElementById('stat-total').textContent = allLeads.length;
+  document.getElementById('stat-qualified').textContent = allLeads.filter(l=>l.status==='Qualified').length;
+  document.getElementById('stat-pending').textContent = allLeads.filter(l=>l.status==='Pending').length;
+  document.getElementById('stat-rejected').textContent = allLeads.filter(l=>l.status==='Rejected').length;
+}
+
+function filterLeads(filter, btn){
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  renderLeads();
+}
+
+function renderLeads(){
+  const leads = currentFilter==='all' ? allLeads : allLeads.filter(l=>l.status===currentFilter);
+  const tbody = document.getElementById('leads-tbody');
+  if(!leads.length){
+    tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads yet</div><div class="empty-sub">Share your form link to start receiving qualified applicants</div></div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = leads.map(l => {
+    const sc = (l.score||0)>=75?'sc-q':(l.score||0)>=40?'sc-p':'sc-r';
+    const st = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
+    const date = l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}) : '—';
+    return `<tr onclick="openModal('${l.id}')">
+      <td><div class="td-primary">${l.name||'—'}</div><div class="td-secondary">${l.email||''}</div></td>
+      <td>${l.budget?'£'+l.budget+'/mo':'—'}</td>
+      <td>${l.region||'—'}</td>
+      <td>${l.employment||'—'}</td>
+      <td><span class="score-chip ${sc}">${l.score||'—'}/100</span></td>
+      <td><span class="status-chip ${st}">${l.status||'—'}</span></td>
+      <td style="color:var(--muted);font-size:12px">${date}</td>
+    </tr>`;
+  }).join('');
+}
+
+function openModal(id){
+  const l = allLeads.find(x=>x.id===id);
+  if(!l) return;
+  const sc = (l.score||0)>=75?'sc-circle-q':(l.score||0)>=40?'sc-circle-p':'sc-circle-r';
+  const st = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
+  document.getElementById('modal-content').innerHTML = `
+    <div class="modal-header">
+      <div><div class="modal-title">${l.name||'Lead Details'}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${l.email||''}</div></div>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+    </div>
+    <div class="score-banner">
+      <div class="score-circle ${sc}">${l.score||'—'}</div>
+      <div class="score-info">
+        <h4>AI Qualification Score</h4>
+        <span class="status-chip ${st}" style="margin-top:4px;display:inline-flex">${l.status||'—'}</span>
+      </div>
+    </div>
+    <div class="modal-section">
+      <div class="modal-section-label">Applicant Details</div>
+      <div class="detail-grid">
+        <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${l.email||'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">${l.phone||'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Monthly Budget</div><div class="detail-value">${l.budget?'£'+l.budget:'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Annual Income</div><div class="detail-value">${l.annual_income?'£'+l.annual_income:'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Employment</div><div class="detail-value">${l.employment||'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Location / Postcode</div><div class="detail-value">${l.region||'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Right to Rent</div><div class="detail-value">${l.right_to_rent||'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Received</div><div class="detail-value">${l.created_at?new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—'}</div></div>
+      </div>
+    </div>
+    ${l.message?`<div class="modal-section"><div class="modal-section-label">Applicant Message</div><div class="message-box">"${l.message}"</div></div>`:''}
+    ${l.analysis?`<div class="modal-section"><div class="modal-section-label">AI Analysis</div><div class="ai-box"><div class="ai-box-label">✦ RentSift AI</div><div class="ai-box-text">${l.analysis}</div></div></div>`:''}
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e){ if(e.target===document.getElementById('modal')) document.getElementById('modal').classList.remove('open'); }
+
+function showSection(name, btn){
+  document.querySelectorAll('.content > div[id^="section-"]').forEach(s=>s.style.display='none');
+  document.getElementById('section-'+name).style.display='block';
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  const titles = {leads:'Lead Dashboard',setup:'Setup & Integration',account:'My Account'};
+  document.getElementById('topbar-title').textContent = titles[name]||'Dashboard';
+  document.getElementById('topbar-badge').textContent = name==='leads'?'Live':'';
+}
+
+function copyFormUrl(){
+  const url = document.getElementById('form-url-display').textContent;
+  navigator.clipboard.writeText(url).then(()=>showToast('✓ Form URL copied to clipboard'));
+}
+
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+function toggleTheme(){
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme', isDark?'light':'dark');
+  document.getElementById('theme-btn').textContent = isDark?'🌙 Theme':'☀️ Theme';
+  localStorage.setItem('theme', isDark?'light':'dark');
+}
+
+init();
+</script>
+</body>
+</html>
