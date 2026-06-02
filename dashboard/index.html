@@ -613,7 +613,7 @@ function renderLeads(){
 }
 
 function openModal(id){
-  const l = allLeads.find(x=>x.id===id);
+  const l = allLeads.find(x=>String(x.id)===String(id));
   if(!l) return;
   const sc = (l.score||0)>=75?'sc-circle-q':(l.score||0)>=40?'sc-circle-p':'sc-circle-r';
   const st = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
