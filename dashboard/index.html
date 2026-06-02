@@ -600,7 +600,7 @@ function renderLeads(){
     const sc = (l.score||0)>=75?'sc-q':(l.score||0)>=40?'sc-p':'sc-r';
     const st = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
     const date = l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}) : '—';
-    return `<tr onclick="openModal('${l.id}')">
+    return `<tr onclick="openModal(${l.id})"
       <td><div class="td-primary">${l.name||'—'}</div><div class="td-secondary">${l.email||''}</div></td>
       <td>${l.budget?'£'+l.budget+'/mo':'—'}</td>
       <td>${l.region||'—'}</td>
