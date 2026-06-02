@@ -405,12 +405,11 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                 <p>Click any row to view the full AI qualification report</p>
               </div>
               <div class="filter-row">
-                <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
-                <button class="filter-btn" onclick="filterLeads('Qualified',this)">✅ Qualified</button>
-                <button class="filter-btn" onclick="filterLeads('Pending',this)">⏳ Pending</button>
-                <button class="filter-btn" onclick="filterLeads('Rejected',this)">❌ Rejected</button>
-              </div>
-            </div>
+  <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
+  <button class="filter-btn" onclick="filterLeads('Suitable',this)">✅ Suitable</button>
+  <button class="filter-btn" onclick="filterLeads('Further assessment required',this)">⏳ Further assessment</button>
+  <button class="filter-btn" onclick="filterLeads('Unsuitable',this)">❌ Unsuitable</button>
+</div>
             <div class="table-wrap">
               <table>
                 <thead>
@@ -494,7 +493,7 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 <script>
 const SUPABASE_URL = 'https://zqwfrgphpefdexlokkvz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpxd2ZyZ3BocGVmZGV4bG9ra3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NTgzMTQsImV4cCI6MjA5NDMzNDMxNH0.gk0mlANr7YsKbhgMBaEaEWDBK9iZU2PXRmF8u5AhPvA';
-const FORM_BASE_URL = 'https://rentsift.co.uk/form';
+const FORM_BASE_URL = 'https://rentsift.co.uk/apply';
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -572,14 +571,13 @@ async function loadLeads(){
   allLeads = data || [];
   updateStats();
   renderLeads();
-  document.getElementById('nav-badge').textContent = allLeads.filter(l=>l.status==='Qualified').length;
+  document.getElementById('nav-badge').textContent = allLeads.filter(l=>l.status==='Suitable').length;
 }
 
 function updateStats(){
-  document.getElementById('stat-total').textContent = allLeads.length;
-  document.getElementById('stat-qualified').textContent = allLeads.filter(l=>l.status==='Qualified').length;
-  document.getElementById('stat-pending').textContent = allLeads.filter(l=>l.status==='Pending').length;
-  document.getElementById('stat-rejected').textContent = allLeads.filter(l=>l.status==='Rejected').length;
+  document.getElementById('stat-qualified').textContent = allLeads.filter(l=>l.status==='Suitable').length;
+document.getElementById('stat-pending').textContent = allLeads.filter(l=>l.status==='Further assessment required').length;
+document.getElementById('stat-rejected').textContent = allLeads.filter(l=>l.status==='Unsuitable').length;
 }
 
 function filterLeads(filter, btn){
@@ -598,9 +596,9 @@ function renderLeads(){
   }
   tbody.innerHTML = leads.map(l => {
     const sc = (l.score||0)>=75?'sc-q':(l.score||0)>=40?'sc-p':'sc-r';
-    const st = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
+    const st = l.status==='Suitable'?'st-q':l.status==='Further assessment required'?'st-p':'st-r';
     const date = l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}) : '—';
-    return `<tr onclick="openModal(${l.id})"
+    return `<tr onclick="openModal(${l.id})">
       <td><div class="td-primary">${l.name||'—'}</div><div class="td-secondary">${l.email||''}</div></td>
       <td>${l.budget?'£'+l.budget+'/mo':'—'}</td>
       <td>${l.region||'—'}</td>
@@ -616,7 +614,7 @@ function openModal(id){
   const l = allLeads.find(x=>String(x.id)===String(id));
   if(!l) return;
   const sc = (l.score||0)>=75?'sc-circle-q':(l.score||0)>=40?'sc-circle-p':'sc-circle-r';
-  const st = l.status==='Qualified'?'st-q':l.status==='Pending'?'st-p':'st-r';
+  const st = l.status==='Suitable'?'st-q':l.status==='Further assessment required'?'st-p':'st-r';
   document.getElementById('modal-content').innerHTML = `
     <div class="modal-header">
       <div><div class="modal-title">${l.name||'Lead Details'}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${l.email||''}</div></div>
