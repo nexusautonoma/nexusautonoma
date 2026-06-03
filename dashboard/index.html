@@ -435,15 +435,15 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
         <div id="section-setup" style="display:none">
           <div class="setup-banner">
             <h3>🚀 Connect RentSift to your listings</h3>
-            <p>Share your unique applicant form link on your Rightmove profile or property listings. Every submission is automatically qualified by our AI.</p>
+            <p>Forward your Rightmove enquiry emails to your unique RentSift address below. Every email is automatically qualified by AI and appears in your dashboard.</p>
             <div class="setup-steps">
-              <div class="setup-step"><div class="setup-step-num">1</div>Copy your unique form URL below</div>
-              <div class="setup-step"><div class="setup-step-num">2</div>Add it to your Rightmove profile under "Contact details" or "Website"</div>
-              <div class="setup-step"><div class="setup-step-num">3</div>Applicants submit enquiries → AI qualifies → results appear in your dashboard</div>
+              <div class="setup-step"><div class="setup-step-num">1</div>Copy your unique RentSift email address below</div>
+<div class="setup-step"><div class="setup-step-num">2</div>Log in to Rightmove → Account Settings → Contact email → paste your RentSift address</div>
+<div class="setup-step"><div class="setup-step-num">3</div>Every new enquiry is automatically qualified — results appear in your dashboard within seconds</div>
             </div>
             <div class="url-copy-box">
               <span class="url-text" id="form-url-display">Loading your unique form URL...</span>
-              <button class="copy-btn" onclick="copyFormUrl()">Copy URL</button>
+              <button class="copy-btn" onclick="copyInboxEmail()">Copy address</button>
             </div>
           </div>
           <div class="info-cards">
@@ -524,7 +524,9 @@ async function showDashboard(){
   document.getElementById('user-email-display').textContent = email;
   document.getElementById('user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
-  document.getElementById('form-url-display').textContent = `${FORM_BASE_URL}?agent=${currentUser.id}`;
+  const { data: profile } = await sb.from('profiles').select('inbox_token').eq('id', currentUser.id).single();
+  const token = profile?.inbox_token || '';
+  document.getElementById('form-url-display').textContent = token ? `${token}@rentsift.co.uk` : 'Loading...';
   await loadLeads();
 }
 
@@ -667,9 +669,9 @@ function showSection(name, btn){
   document.getElementById('topbar-badge').textContent = name==='leads'?'Live':'';
 }
 
-function copyFormUrl(){
-  const url = document.getElementById('form-url-display').textContent;
-  navigator.clipboard.writeText(url).then(()=>showToast('✓ Form URL copied to clipboard'));
+function copyInboxEmail(){
+  const addr = document.getElementById('form-url-display').textContent;
+  navigator.clipboard.writeText(addr).then(()=>showToast('✓ Email address copied'));
 }
 
 function showToast(msg){
