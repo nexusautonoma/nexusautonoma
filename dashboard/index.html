@@ -536,14 +536,17 @@ async function init() {
     document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀️ Theme' : '🌙 Theme';
   }
 
-  // Handle magic link / recovery hash from URL
-  sb.auth.onAuthStateChange(async (event, session) => {
-    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
-      currentUser = session.user;
+  // Magic link hash'i varsa Supabase işlesin
+  if (window.location.hash.includes('access_token')) {
+    const { data, error } = await sb.auth.getSession();
+    if (data?.session) {
+      currentUser = data.session.user;
+      window.history.replaceState({}, document.title, window.location.pathname);
       await showDashboard();
       document.getElementById('app-loading').style.display = 'none';
+      return;
     }
-  });
+  }
 
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
