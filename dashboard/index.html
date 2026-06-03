@@ -535,6 +535,16 @@ async function init() {
     document.documentElement.setAttribute('data-theme', saved);
     document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀️ Theme' : '🌙 Theme';
   }
+
+  // Handle magic link / recovery hash from URL
+  sb.auth.onAuthStateChange(async (event, session) => {
+    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+      currentUser = session.user;
+      await showDashboard();
+      document.getElementById('app-loading').style.display = 'none';
+    }
+  });
+
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
@@ -543,6 +553,7 @@ async function init() {
     showAuth();
   }
   document.getElementById('app-loading').style.display = 'none';
+}
 }
 
 function showAuth() {
