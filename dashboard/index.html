@@ -63,7 +63,7 @@
 html,body{height:100%;overflow:hidden}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
 
-/* ── LOADING ── */
+/* LOADING */
 #app-loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;gap:20px}
 .loading-logo{display:flex;align-items:center;gap:12px}
 .loading-logo-icon svg{width:40px;height:40px}
@@ -71,9 +71,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .loading-spinner{width:28px;height:28px;border:2px solid var(--border2);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* ── AUTH ── */
-#auth-view{display:none;min-height:100vh;overflow-y:auto;align-items:center;justify-content:center;background:linear-height(135deg,var(--bg) 0%,var(--bg2) 100%);padding:40px 20px;position:relative}
-#auth-view::before{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background:linear-gradient(135deg,transparent,var(--gold-pale));opacity:.5;pointer-events:none}
+/* AUTH */
+#auth-view{display:none;min-height:100vh;overflow-y:auto;align-items:center;justify-content:center;background:var(--bg);padding:40px 20px;position:relative}
 .auth-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:48px;width:100%;max-width:420px;box-shadow:0 8px 40px rgba(0,0,0,0.08);position:relative;z-index:2}
 .auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:36px;text-decoration:none}
 .auth-logo svg{width:36px;height:36px}
@@ -95,19 +94,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .auth-btn:disabled{opacity:.6;cursor:not-allowed;transform:none}
 .auth-toggle{text-align:center;margin-top:20px;font-size:13px;color:var(--muted)}
 .auth-toggle a{color:var(--gold);font-weight:500;cursor:pointer;text-decoration:none}
-.auth-divider{display:flex;align-items:center;gap:10px;margin:20px 0;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
-.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* ── DASHBOARD LAYOUT ── */
+/* DASHBOARD LAYOUT */
 #dash-view{display:none;height:100vh;overflow:hidden}
 .dash-layout{display:flex;height:100vh}
 
 /* SIDEBAR */
-.sidebar{width:var(--sidebar-w);background:var(--navy);border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;flex-shrink:0;transition:background .3s}
+.sidebar{width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;flex-shrink:0}
 .sidebar-header{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,0.06)}
-.sidebar-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+.sidebar-brand{display:flex;align-items:center;gap:10px;text-decoration:none;cursor:pointer;background:none;border:none;width:100%;padding:0}
 .sidebar-brand svg{width:30px;height:30px;flex-shrink:0}
-.sidebar-brand-text{display:flex;flex-direction:column;line-height:1}
+.sidebar-brand-text{display:flex;flex-direction:column;line-height:1;text-align:left}
 .sidebar-brand-name{font-family:'Cormorant Garamond',serif;font-size:19px;font-weight:700;color:white;letter-spacing:0.5px}
 .sidebar-brand-tag{font-size:8px;font-weight:600;color:var(--gold-light);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
 .sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto}
@@ -130,10 +127,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
-.topbar{height:60px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:var(--surface);flex-shrink:0;transition:background .3s,border-color .3s}
+.topbar{height:60px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:var(--surface);flex-shrink:0}
 .topbar-left{display:flex;align-items:center;gap:12px}
 .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
-.topbar-badge{font-size:11px;font-weight:600;background:var(--gold-pale);color:var(--gold);border:1px solid var(--gold-border);padding:3px 10px;border-radius:100px;letter-spacing:0.3px}
 .topbar-right{display:flex;align-items:center;gap:10px}
 .topbar-btn{background:var(--surface2);border:1px solid var(--border);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;color:var(--text2)}
 .topbar-btn:hover{border-color:var(--gold);color:var(--gold)}
@@ -141,7 +137,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 
 /* STATS */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;transition:all .2s;cursor:default}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;transition:all .2s}
 .stat-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.06);transform:translateY(-1px)}
 .stat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .stat-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted)}
@@ -155,12 +151,12 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .stat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
 
 /* LEADS TABLE */
-.leads-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:background .3s,border-color .3s}
+.leads-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
 .panel-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .panel-header-left h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text)}
 .panel-header-left p{font-size:12px;color:var(--muted);margin-top:1px}
-.filter-row{display:flex;gap:4px}
-.filter-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;font-family:'DM Sans',sans-serif;letter-spacing:0.2px}
+.filter-row{display:flex;gap:4px;flex-wrap:wrap}
+.filter-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;font-family:'DM Sans',sans-serif}
 .filter-btn:hover{background:var(--bg2);color:var(--text)}
 .filter-btn.active{background:var(--navy);color:white;border-color:var(--navy)}
 .table-wrap{overflow-x:auto}
@@ -213,35 +209,38 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 .message-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7;font-style:italic}
 
 /* SETUP PAGE */
-.setup-banner{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 100%);border-radius:14px;padding:28px 32px;margin-bottom:24px;position:relative;overflow:hidden}
-.setup-banner::before{content:'';position:absolute;top:-40px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(212,160,23,0.15),transparent);pointer-events:none}
-.setup-banner h3{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:white;margin-bottom:6px}
-.setup-banner p{font-size:14px;color:rgba(255,255,255,0.65);margin-bottom:20px;line-height:1.6}
-.setup-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-.setup-step{display:flex;align-items:center;gap:12px;font-size:13px;color:rgba(255,255,255,0.8)}
-.setup-step-num{width:24px;height:24px;border-radius:50%;background:rgba(212,160,23,0.2);border:1px solid rgba(212,160,23,0.4);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gold-light);flex-shrink:0}
-.url-copy-box{background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:10px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.url-text{font-size:12px;color:rgba(255,255,255,0.75);font-family:monospace;word-break:break-all}
-.copy-btn{background:var(--gold);color:var(--navy);padding:7px 16px;border-radius:7px;font-size:12px;font-weight:700;border:none;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'DM Sans',sans-serif}
-.copy-btn:hover{background:var(--gold-light);transform:translateY(-1px)}
-.info-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-.info-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .2s}
-.info-card:hover{border-color:var(--gold-border);box-shadow:0 4px 20px rgba(184,134,11,0.06)}
-.info-card-icon{font-size:24px;margin-bottom:12px}
-.info-card h4{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);margin-bottom:6px}
-.info-card p{font-size:13px;color:var(--muted);line-height:1.65}
+.setup-page{max-width:720px}
+.setup-header{margin-bottom:28px}
+.setup-header h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px}
+.setup-header p{font-size:14px;color:var(--muted);line-height:1.6}
+.setup-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:28px;margin-bottom:16px}
+.setup-card h4{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);margin-bottom:4px}
+.setup-card p{font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+.inbox-address-box{background:var(--bg2);border:1.5px solid var(--gold-border);border-radius:10px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.inbox-address{font-family:monospace;font-size:13px;color:var(--text);word-break:break-all}
+.copy-btn{background:var(--navy);color:white;padding:8px 18px;border-radius:7px;font-size:12px;font-weight:600;border:none;cursor:pointer;white-space:nowrap;transition:all .2s;font-family:'DM Sans',sans-serif;flex-shrink:0}
+.copy-btn:hover{background:var(--gold);transform:translateY(-1px)}
+.setup-steps{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+.setup-step{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px}
+.step-num{width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
+.step-text{font-size:13px;color:var(--text2);line-height:1.6}
+.step-text strong{color:var(--text);font-weight:600}
 
 /* ACCOUNT PAGE */
-.account-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.account-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;transition:all .2s}
-.account-card h4{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.account-page{max-width:720px}
+.account-header{margin-bottom:28px}
+.account-header h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--text);margin-bottom:6px}
+.account-header p{font-size:14px;color:var(--muted)}
+.account-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.account-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px}
+.account-card h4{font-family:'Cormorant Garamond',serif;font-size:17px;font-weight:600;color:var(--text);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--border)}
 .plan-badge-card{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--gold-pale);border:1px solid var(--gold-border);border-radius:10px;margin-bottom:14px}
 .plan-badge-name{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text)}
 .plan-badge-status{font-size:11px;font-weight:700;background:var(--green-pale);color:var(--green);border:1px solid var(--green-border);padding:4px 12px;border-radius:100px}
-.account-detail-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
-.account-detail-row:last-child{border-bottom:none}
-.account-detail-label{color:var(--muted)}
-.account-detail-value{font-weight:500;color:var(--text)}
+.account-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.account-row:last-child{border-bottom:none}
+.account-row-label{color:var(--muted)}
+.account-row-value{font-weight:500;color:var(--text)}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
@@ -250,7 +249,7 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 @media(max-width:768px){
   .sidebar{display:none}
   .stats-row{grid-template-columns:repeat(2,1fr)}
-  .detail-grid,.info-cards,.account-grid{grid-template-columns:1fr}
+  .detail-grid,.account-grid{grid-template-columns:1fr}
   .content{padding:16px}
 }
 </style>
@@ -275,7 +274,7 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 </div>
 
 <!-- AUTH -->
-<div id="auth-view" style="display:none;min-height:100vh;overflow-y:auto;align-items:center;justify-content:center;background:var(--bg);padding:40px 20px;position:relative">
+<div id="auth-view">
   <div class="auth-card">
     <a href="https://rentsift.co.uk" class="auth-logo">
       <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -305,7 +304,7 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
     <div id="register-form" style="display:none">
       <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Get Started</span></div>
       <h1 class="auth-title">Create account</h1>
-      <p class="auth-sub">Set up your RentSift dashboard to start qualifying leads</p>
+      <p class="auth-sub">Set up your RentSift dashboard</p>
       <div class="auth-error" id="register-error"></div>
       <div class="form-group"><label>Email address</label><input type="email" id="reg-email" placeholder="jane@agency.co.uk"></div>
       <div class="form-group"><label>Password</label><input type="password" id="reg-password" placeholder="Minimum 8 characters"></div>
@@ -323,7 +322,7 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
     <!-- SIDEBAR -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <a href="https://rentsift.co.uk" class="sidebar-brand">
+        <button class="sidebar-brand" onclick="window.open('https://rentsift.co.uk','_blank')">
           <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
             <rect width="36" height="36" rx="8" fill="rgba(255,255,255,0.08)"/>
             <path d="M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z" fill="#d4a017"/>
@@ -335,27 +334,36 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
             <span class="sidebar-brand-name">RentSift</span>
             <span class="sidebar-brand-tag">Agent Portal</span>
           </div>
-        </a>
+        </button>
       </div>
       <nav class="sidebar-nav">
         <div class="nav-section-label">Main</div>
-        <button class="nav-item active" onclick="showSection('leads',this)"><span class="nav-icon">📊</span>Lead Dashboard<span class="nav-item-badge" id="nav-badge">0</span></button>
-        <button class="nav-item" onclick="showSection('setup',this)"><span class="nav-icon">⚙️</span>Setup & Integration</button>
+        <button class="nav-item active" id="nav-leads" onclick="showSection('leads',this)">
+          <span class="nav-icon">📊</span>Lead Dashboard
+          <span class="nav-item-badge" id="nav-badge">0</span>
+        </button>
+        <button class="nav-item" id="nav-setup" onclick="showSection('setup',this)">
+          <span class="nav-icon">⚙️</span>Setup & Integration
+        </button>
         <div class="nav-section-label">Account</div>
-        <button class="nav-item" onclick="showSection('account',this)"><span class="nav-icon">👤</span>My Account</button>
-        <a class="nav-item" href="mailto:hello@rentsift.co.uk"><span class="nav-icon">✉️</span>Support</a>
+        <button class="nav-item" id="nav-account" onclick="showSection('account',this)">
+          <span class="nav-icon">👤</span>My Account
+        </button>
+        <a class="nav-item" href="mailto:hello@rentsift.co.uk">
+          <span class="nav-icon">✉️</span>Support
+        </a>
       </nav>
       <div class="sidebar-bottom">
         <div class="user-block">
           <div class="user-av" id="user-av">?</div>
           <div class="user-info">
             <div class="user-email" id="user-email-display">Loading...</div>
-            <div class="user-plan">Professional Plan</div>
+            <div class="user-plan" id="user-plan-display">—</div>
           </div>
         </div>
         <div class="sidebar-actions">
-          <button class="sidebar-action-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">🌙 Theme</button>
-          <button class="sidebar-action-btn logout-btn" onclick="handleLogout()" title="Sign out">↩ Sign out</button>
+          <button class="sidebar-action-btn" onclick="toggleTheme()" id="theme-btn">🌙 Theme</button>
+          <button class="sidebar-action-btn logout-btn" onclick="handleLogout()">↩ Sign out</button>
         </div>
       </div>
     </div>
@@ -365,7 +373,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
       <div class="topbar">
         <div class="topbar-left">
           <span class="topbar-title" id="topbar-title">Lead Dashboard</span>
-          <span class="topbar-badge" id="topbar-badge">Live</span>
         </div>
         <div class="topbar-right">
           <button class="topbar-btn" onclick="loadLeads()" title="Refresh">↻</button>
@@ -382,17 +389,17 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
               <div class="stat-sub"><span class="stat-dot" style="background:var(--gold)"></span>All enquiries received</div>
             </div>
             <div class="stat-card">
-              <div class="stat-header"><span class="stat-label">Qualified</span><div class="stat-icon si-green">✅</div></div>
+              <div class="stat-header"><span class="stat-label">Suitable</span><div class="stat-icon si-green">✅</div></div>
               <div class="stat-num" id="stat-qualified" style="color:var(--green)">—</div>
               <div class="stat-sub"><span class="stat-dot" style="background:var(--green)"></span>Ready for viewing</div>
             </div>
             <div class="stat-card">
               <div class="stat-header"><span class="stat-label">Pending</span><div class="stat-icon si-amber">⏳</div></div>
               <div class="stat-num" id="stat-pending" style="color:var(--amber)">—</div>
-              <div class="stat-sub"><span class="stat-dot" style="background:var(--amber)"></span>Awaiting review</div>
+              <div class="stat-sub"><span class="stat-dot" style="background:var(--amber)"></span>Further assessment</div>
             </div>
             <div class="stat-card">
-              <div class="stat-header"><span class="stat-label">Rejected</span><div class="stat-icon si-red">❌</div></div>
+              <div class="stat-header"><span class="stat-label">Unsuitable</span><div class="stat-icon si-red">❌</div></div>
               <div class="stat-num" id="stat-rejected" style="color:var(--red)">—</div>
               <div class="stat-sub"><span class="stat-dot" style="background:var(--red)"></span>Automatically filtered</div>
             </div>
@@ -405,11 +412,12 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                 <p>Click any row to view the full AI qualification report</p>
               </div>
               <div class="filter-row">
-  <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
-  <button class="filter-btn" onclick="filterLeads('Suitable',this)">✅ Suitable</button>
-  <button class="filter-btn" onclick="filterLeads('Further assessment required',this)">⏳ Further assessment</button>
-  <button class="filter-btn" onclick="filterLeads('Unsuitable',this)">❌ Unsuitable</button>
-</div>
+                <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
+                <button class="filter-btn" onclick="filterLeads('Suitable',this)">✅ Suitable</button>
+                <button class="filter-btn" onclick="filterLeads('Further assessment required',this)">⏳ Pending</button>
+                <button class="filter-btn" onclick="filterLeads('Unsuitable',this)">❌ Unsuitable</button>
+              </div>
+            </div>
             <div class="table-wrap">
               <table>
                 <thead>
@@ -433,47 +441,66 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 
         <!-- SETUP SECTION -->
         <div id="section-setup" style="display:none">
-          <div class="setup-banner">
-            <h3>🚀 Connect RentSift to your listings</h3>
-            <p>Forward your Rightmove enquiry emails to your unique RentSift address below. Every email is automatically qualified by AI and appears in your dashboard.</p>
-            <div class="setup-steps">
-              <div class="setup-step"><div class="setup-step-num">1</div>Copy your unique RentSift email address below</div>
-<div class="setup-step"><div class="setup-step-num">2</div>Log in to Rightmove → Account Settings → Contact email → paste your RentSift address</div>
-<div class="setup-step"><div class="setup-step-num">3</div>Every new enquiry is automatically qualified — results appear in your dashboard within seconds</div>
+          <div class="setup-page">
+            <div class="setup-header">
+              <h2>Setup & Integration</h2>
+              <p>Connect RentSift to your Rightmove account to automatically qualify enquiries.</p>
             </div>
-            <div class="url-copy-box">
-              <span class="url-text" id="form-url-display">Loading your unique form URL...</span>
-              <button class="copy-btn" onclick="copyInboxEmail()">Copy address</button>
+
+            <div class="setup-card">
+              <h4>Your unique RentSift inbox address</h4>
+              <p>Set this as your contact email in Rightmove. Every enquiry sent to this address will be automatically qualified by AI and appear in your Lead Dashboard.</p>
+              <div class="inbox-address-box">
+                <span class="inbox-address" id="inbox-address-display">Loading...</span>
+                <button class="copy-btn" onclick="copyInboxEmail()">Copy</button>
+              </div>
+              <div class="setup-steps">
+                <div class="setup-step">
+                  <div class="step-num">1</div>
+                  <div class="step-text">Copy your unique address above</div>
+                </div>
+                <div class="setup-step">
+                  <div class="step-num">2</div>
+                  <div class="step-text"><strong>Rightmove</strong> → Account Settings → Contact details → paste your RentSift address as your contact email</div>
+                </div>
+                <div class="setup-step">
+                  <div class="step-num">3</div>
+                  <div class="step-text">Every new Rightmove enquiry is automatically qualified — results appear in your <strong>Lead Dashboard</strong> within seconds</div>
+                </div>
+              </div>
             </div>
-          </div>
-          <div class="info-cards">
-            <div class="info-card"><div class="info-card-icon">📋</div><h4>Applicant submits</h4><p>They complete a structured form with income, employment, right to rent status, and message. Takes under two minutes.</p></div>
-            <div class="info-card"><div class="info-card-icon">🤖</div><h4>AI qualifies instantly</h4><p>Income 30× rule, right to rent check, student detection, urgency scoring — all in seconds, 24 hours a day.</p></div>
-            <div class="info-card"><div class="info-card-icon">📥</div><h4>Results in your dashboard</h4><p>Qualified leads appear here with full AI analysis. You only speak to serious, eligible applicants.</p></div>
+
+            <div class="setup-card">
+              <h4>How it works</h4>
+              <p>When a prospective tenant sends an enquiry through Rightmove, RentSift receives it, extracts the applicant's details, and runs an AI qualification check using UK letting standards — the 30× income rule, Right to Rent status, employment type, and urgency signals. You receive a scored result instantly.</p>
+            </div>
           </div>
         </div>
 
         <!-- ACCOUNT SECTION -->
         <div id="section-account" style="display:none">
-          <div class="account-grid">
-            <div class="account-card">
-              <h4>Your Subscription</h4>
-              <div class="plan-badge-card">
-                <span class="plan-badge-name">Professional Plan</span>
-                <span class="plan-badge-status">Active</span>
-              </div>
-              <div class="account-detail-row"><span class="account-detail-label">Listings included</span><span class="account-detail-value">5 active listings</span></div>
-              <div class="account-detail-row"><span class="account-detail-label">Monthly applicants</span><span class="account-detail-value">500 applicants</span></div>
-              <div class="account-detail-row"><span class="account-detail-label">Billing cycle</span><span class="account-detail-value">Monthly</span></div>
-              <div class="account-detail-row"><span class="account-detail-label">Monthly fee</span><span class="account-detail-value">£199</span></div>
+          <div class="account-page">
+            <div class="account-header">
+              <h2>My Account</h2>
+              <p>Your subscription details and account information.</p>
             </div>
-            <div class="account-card">
-              <h4>Account Details</h4>
-              <div class="account-detail-row"><span class="account-detail-label">Email address</span><span class="account-detail-value" id="account-email">—</span></div>
-              <div class="account-detail-row"><span class="account-detail-label">Account status</span><span class="account-detail-value" style="color:var(--green)">Active</span></div>
-              <div class="account-detail-row"><span class="account-detail-label">Support</span><span class="account-detail-value"><a href="mailto:hello@rentsift.co.uk" style="color:var(--gold)">hello@rentsift.co.uk</a></span></div>
-              <div class="account-detail-row"><span class="account-detail-label">Data compliance</span><span class="account-detail-value">UK GDPR</span></div>
-              <div class="account-detail-row"><span class="account-detail-label">Manage subscription</span><span class="account-detail-value"><a href="mailto:hello@rentsift.co.uk?subject=Subscription%20change" style="color:var(--gold)">Contact us</a></span></div>
+            <div class="account-grid">
+              <div class="account-card">
+                <h4>Subscription</h4>
+                <div class="plan-badge-card">
+                  <span class="plan-badge-name" id="account-plan-name">—</span>
+                  <span class="plan-badge-status">Active</span>
+                </div>
+                <div class="account-row"><span class="account-row-label">Billing</span><span class="account-row-value">Monthly</span></div>
+                <div class="account-row"><span class="account-row-label">Manage</span><span class="account-row-value"><a href="mailto:hello@rentsift.co.uk?subject=Subscription" style="color:var(--gold)">Contact us</a></span></div>
+              </div>
+              <div class="account-card">
+                <h4>Account Details</h4>
+                <div class="account-row"><span class="account-row-label">Email</span><span class="account-row-value" id="account-email">—</span></div>
+                <div class="account-row"><span class="account-row-label">Status</span><span class="account-row-value" style="color:var(--green)">Active</span></div>
+                <div class="account-row"><span class="account-row-label">Data</span><span class="account-row-value">UK GDPR compliant</span></div>
+                <div class="account-row"><span class="account-row-label">Support</span><span class="account-row-value"><a href="mailto:hello@rentsift.co.uk" style="color:var(--gold)">hello@rentsift.co.uk</a></span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -494,7 +521,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 <script>
 const SUPABASE_URL = 'https://zqwfrgphpefdexlokkvz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpxd2ZyZ3BocGVmZGV4bG9ra3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NTgzMTQsImV4cCI6MjA5NDMzNDMxNH0.gk0mlANr7YsKbhgMBaEaEWDBK9iZU2PXRmF8u5AhPvA';
-const FORM_BASE_URL = 'https://rentsift.co.uk/apply';
 
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -503,190 +529,214 @@ let allLeads = [];
 let currentFilter = 'all';
 let currentUser = null;
 
-async function init(){
+async function init() {
   const saved = localStorage.getItem('theme');
-  if(saved){ document.documentElement.setAttribute('data-theme',saved); document.getElementById('theme-btn').textContent = saved==='dark'?'☀️ Theme':'🌙 Theme'; }
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀️ Theme' : '🌙 Theme';
+  }
   const { data: { session } } = await sb.auth.getSession();
-  if(session){ currentUser = session.user; showDashboard(); }
-  else { showAuth(); }
-  document.getElementById('app-loading').style.display='none';
+  if (session) {
+    currentUser = session.user;
+    await showDashboard();
+  } else {
+    showAuth();
+  }
+  document.getElementById('app-loading').style.display = 'none';
 }
 
-function showAuth(){
-  document.getElementById('auth-view').style.display='flex';
-  document.getElementById('dash-view').style.display='none';
+function showAuth() {
+  document.getElementById('auth-view').style.display = 'flex';
+  document.getElementById('dash-view').style.display = 'none';
 }
 
-async function showDashboard(){
-  document.getElementById('auth-view').style.display='none';
-  document.getElementById('dash-view').style.display='block';
+async function showDashboard() {
+  document.getElementById('auth-view').style.display = 'none';
+  document.getElementById('dash-view').style.display = 'block';
+
   const email = currentUser.email;
   document.getElementById('user-email-display').textContent = email;
   document.getElementById('user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
-  const { data: profile } = await sb.from('profiles').select('inbox_token').eq('id', currentUser.id).single();
+
+  // Load profile (inbox token + plan)
+  const { data: profile } = await sb.from('profiles').select('inbox_token, plan').eq('id', currentUser.id).single();
   const token = profile?.inbox_token || '';
-  document.getElementById('form-url-display').textContent = token ? `${token}@rentsift.co.uk` : 'Loading...';
+  const plan = profile?.plan || 'starter';
+  const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
+
+  document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
+  document.getElementById('user-plan-display').textContent = planLabel;
+  document.getElementById('account-plan-name').textContent = planLabel;
+
   await loadLeads();
 }
 
-function toggleForm(type){
-  document.getElementById('login-form').style.display = type==='login'?'block':'none';
-  document.getElementById('register-form').style.display = type==='register'?'block':'none';
+function toggleForm(type) {
+  document.getElementById('login-form').style.display = type === 'login' ? 'block' : 'none';
+  document.getElementById('register-form').style.display = type === 'register' ? 'block' : 'none';
 }
 
-async function handleLogin(){
-  const email = document.getElementById('login-email').value;
+async function handleLogin() {
+  const email = document.getElementById('login-email').value.trim();
   const password = document.getElementById('login-password').value;
   const btn = document.getElementById('login-btn');
   const err = document.getElementById('login-error');
-  err.style.display='none';
-  btn.disabled=true; btn.textContent='Signing in...';
+  err.style.display = 'none';
+  if (!email || !password) { err.textContent = 'Please enter your email and password.'; err.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Signing in...';
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
-  if(error){ err.textContent=error.message; err.style.display='block'; btn.disabled=false; btn.textContent='Sign in to dashboard'; return; }
+  if (error) { err.textContent = error.message; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Sign in to dashboard'; return; }
   currentUser = data.user;
-  showDashboard();
+  await showDashboard();
 }
 
-async function handleRegister(){
-  const email = document.getElementById('reg-email').value;
+async function handleRegister() {
+  const email = document.getElementById('reg-email').value.trim();
   const password = document.getElementById('reg-password').value;
   const btn = document.getElementById('register-btn');
   const err = document.getElementById('register-error');
-  err.style.display='none';
-  btn.disabled=true; btn.textContent='Creating account...';
+  err.style.display = 'none';
+  if (!email || !password) { err.textContent = 'Please fill in all fields.'; err.style.display = 'block'; return; }
+  if (password.length < 8) { err.textContent = 'Password must be at least 8 characters.'; err.style.display = 'block'; return; }
+  btn.disabled = true; btn.textContent = 'Creating account...';
   const { data, error } = await sb.auth.signUp({ email, password });
-  if(error){ err.textContent=error.message; err.style.display='block'; btn.disabled=false; btn.textContent='Create account'; return; }
+  if (error) { err.textContent = error.message; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Create account'; return; }
   currentUser = data.user;
-  showDashboard();
+  await showDashboard();
   showToast('✓ Account created. Welcome to RentSift.');
 }
 
-async function handleLogout(){
+async function handleLogout() {
   await sb.auth.signOut();
   currentUser = null;
+  allLeads = [];
   showAuth();
 }
 
-async function loadLeads(){
+async function loadLeads() {
   const { data, error } = await sb.from('leads').select('*').order('created_at', { ascending: false });
-  if(error){ console.error(error); return; }
+  if (error) { console.error('loadLeads error:', error); return; }
   allLeads = data || [];
   updateStats();
   renderLeads();
-  document.getElementById('nav-badge').textContent = allLeads.filter(l=>l.status==='Suitable').length;
+  const suitableCount = allLeads.filter(l => l.status === 'Suitable').length;
+  document.getElementById('nav-badge').textContent = suitableCount;
 }
 
-function updateStats(){
-  document.getElementById('stat-qualified').textContent = allLeads.filter(l=>l.status==='Suitable').length;
-document.getElementById('stat-pending').textContent = allLeads.filter(l=>l.status==='Further assessment required').length;
-document.getElementById('stat-rejected').textContent = allLeads.filter(l=>l.status==='Unsuitable').length;
+function updateStats() {
+  document.getElementById('stat-total').textContent = allLeads.length;
+  document.getElementById('stat-qualified').textContent = allLeads.filter(l => l.status === 'Suitable').length;
+  document.getElementById('stat-pending').textContent = allLeads.filter(l => l.status === 'Further assessment required').length;
+  document.getElementById('stat-rejected').textContent = allLeads.filter(l => l.status === 'Unsuitable').length;
 }
 
-function filterLeads(filter, btn){
+function filterLeads(filter, btn) {
   currentFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.filter-btn').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   renderLeads();
 }
 
-function renderLeads(){
-  const leads = currentFilter==='all' ? allLeads : allLeads.filter(l=>l.status===currentFilter);
+function renderLeads() {
+  const leads = currentFilter === 'all' ? allLeads : allLeads.filter(l => l.status === currentFilter);
   const tbody = document.getElementById('leads-tbody');
-  if(!leads.length){
-    tbody.innerHTML=`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads yet</div><div class="empty-sub">Share your form link to start receiving qualified applicants</div></div></td></tr>`;
+  if (!leads.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads yet</div><div class="empty-sub">Set up your Rightmove integration to start receiving qualified applicants</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML = leads.map(l => {
-    const sc = (l.score||0)>=75?'sc-q':(l.score||0)>=40?'sc-p':'sc-r';
-    const st = l.status==='Suitable'?'st-q':l.status==='Further assessment required'?'st-p':'st-r';
-    const date = l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}) : '—';
+    const sc = (l.score || 0) >= 75 ? 'sc-q' : (l.score || 0) >= 40 ? 'sc-p' : 'sc-r';
+    const st = l.status === 'Suitable' ? 'st-q' : l.status === 'Further assessment required' ? 'st-p' : 'st-r';
+    const date = l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: '2-digit' }) : '—';
     return `<tr onclick="openModal(${l.id})">
-      <td><div class="td-primary">${escapeHtml(l.name)||'—'}</div><div class="td-secondary">${escapeHtml(l.email)||''}</div></td>
-      <td>${l.budget?'£'+l.budget+'/mo':'—'}</td>
-      <td>${l.region||'—'}</td>
-      <td>${l.employment||'—'}</td>
-      <td><span class="score-chip ${sc}">${l.score||'—'}/100</span></td>
-      <td><span class="status-chip ${st}">${l.status||'—'}</span></td>
+      <td><div class="td-primary">${esc(l.name)}</div><div class="td-secondary">${esc(l.email)}</div></td>
+      <td>${l.budget ? '£' + l.budget + '/mo' : '—'}</td>
+      <td>${esc(l.region) || '—'}</td>
+      <td>${esc(l.employment) || '—'}</td>
+      <td><span class="score-chip ${sc}">${l.score || '—'}/100</span></td>
+      <td><span class="status-chip ${st}">${l.status || '—'}</span></td>
       <td style="color:var(--muted);font-size:12px">${date}</td>
     </tr>`;
   }).join('');
 }
-function escapeHtml(str) {
+
+function esc(str) {
   if (!str) return '—';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
 }
-function openModal(id){
-  const l = allLeads.find(x=>String(x.id)===String(id));
-  if(!l) return;
-  const sc = (l.score||0)>=75?'sc-circle-q':(l.score||0)>=40?'sc-circle-p':'sc-circle-r';
-  const st = l.status==='Suitable'?'st-q':l.status==='Further assessment required'?'st-p':'st-r';
+
+function openModal(id) {
+  const l = allLeads.find(x => String(x.id) === String(id));
+  if (!l) return;
+  const sc = (l.score || 0) >= 75 ? 'sc-circle-q' : (l.score || 0) >= 40 ? 'sc-circle-p' : 'sc-circle-r';
+  const st = l.status === 'Suitable' ? 'st-q' : l.status === 'Further assessment required' ? 'st-p' : 'st-r';
   document.getElementById('modal-content').innerHTML = `
     <div class="modal-header">
-      <div><div class="modal-title">${escapeHtml(l.name)||'Lead Details'}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${escapeHtml(l.email)||''}</div></div>
+      <div>
+        <div class="modal-title">${esc(l.name)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(l.email)}</div>
+      </div>
       <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
     </div>
     <div class="score-banner">
-      <div class="score-circle ${sc}">${l.score||'—'}</div>
+      <div class="score-circle ${sc}">${l.score || '—'}</div>
       <div class="score-info">
         <h4>AI Qualification Score</h4>
-        <span class="status-chip ${st}" style="margin-top:4px;display:inline-flex">${l.status||'—'}</span>
+        <span class="status-chip ${st}" style="margin-top:4px;display:inline-flex">${l.status || '—'}</span>
       </div>
     </div>
     <div class="modal-section">
       <div class="modal-section-label">Applicant Details</div>
       <div class="detail-grid">
-        <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${l.email||'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">${l.phone||'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Monthly Budget</div><div class="detail-value">${l.budget?'£'+l.budget:'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Annual Income</div><div class="detail-value">${l.annual_income?'£'+l.annual_income:'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Employment</div><div class="detail-value">${escapeHtml(l.employment)||'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Location / Postcode</div><div class="detail-value">${escapeHtml(l.region)||'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Right to Rent</div><div class="detail-value">${l.right_to_rent||'—'}</div></div>
-        <div class="detail-item"><div class="detail-label">Received</div><div class="detail-value">${l.created_at?new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${esc(l.email)}</div></div>
+        <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">${esc(l.phone) || '—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Monthly Budget</div><div class="detail-value">${l.budget ? '£' + l.budget : '—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Annual Income</div><div class="detail-value">${l.annual_income ? '£' + l.annual_income : '—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Employment</div><div class="detail-value">${esc(l.employment) || '—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value">${esc(l.region) || '—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Right to Rent</div><div class="detail-value">${esc(l.right_to_rent) || '—'}</div></div>
+        <div class="detail-item"><div class="detail-label">Received</div><div class="detail-value">${l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' }) : '—'}</div></div>
       </div>
     </div>
-    ${l.message?`<div class="modal-section"><div class="modal-section-label">Applicant Message</div><div class="message-box">"${escapeHtml(l.message)}"</div></div>`:''}
-    ${l.analysis?`<div class="modal-section"><div class="modal-section-label">AI Analysis</div><div class="ai-box"><div class="ai-box-label">✦ RentSift AI</div><div class="ai-box-text">${escapeHtml(l.analysis)}</div></div></div>`:''}
+    ${l.message ? `<div class="modal-section"><div class="modal-section-label">Applicant Message</div><div class="message-box">"${esc(l.message)}"</div></div>` : ''}
+    ${l.analysis ? `<div class="modal-section"><div class="modal-section-label">AI Analysis</div><div class="ai-box"><div class="ai-box-label">✦ RentSift AI</div><div class="ai-box-text">${esc(l.analysis)}</div></div></div>` : ''}
   `;
   document.getElementById('modal').classList.add('open');
 }
 
-function closeModal(e){ if(e.target===document.getElementById('modal')) document.getElementById('modal').classList.remove('open'); }
-
-function showSection(name, btn){
-  document.querySelectorAll('.content > div[id^="section-"]').forEach(s=>s.style.display='none');
-  document.getElementById('section-'+name).style.display='block';
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-  const titles = {leads:'Lead Dashboard',setup:'Setup & Integration',account:'My Account'};
-  document.getElementById('topbar-title').textContent = titles[name]||'Dashboard';
-  document.getElementById('topbar-badge').textContent = name==='leads'?'Live':'';
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) document.getElementById('modal').classList.remove('open');
 }
 
-function copyInboxEmail(){
-  const addr = document.getElementById('form-url-display').textContent;
-  navigator.clipboard.writeText(addr).then(()=>showToast('✓ Email address copied'));
+function showSection(name, btn) {
+  document.querySelectorAll('#section-leads, #section-setup, #section-account').forEach(s => s.style.display = 'none');
+  document.getElementById('section-' + name).style.display = 'block';
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const titles = { leads: 'Lead Dashboard', setup: 'Setup & Integration', account: 'My Account' };
+  document.getElementById('topbar-title').textContent = titles[name] || 'Dashboard';
 }
 
-function showToast(msg){
+function copyInboxEmail() {
+  const addr = document.getElementById('inbox-address-display').textContent;
+  if (addr === 'Loading...' || addr === 'Not available') return;
+  navigator.clipboard.writeText(addr).then(() => showToast('✓ Inbox address copied'));
+}
+
+function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3000);
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-function toggleTheme(){
+function toggleTheme() {
   const html = document.documentElement;
-  const isDark = html.getAttribute('data-theme')==='dark';
-  html.setAttribute('data-theme', isDark?'light':'dark');
-  document.getElementById('theme-btn').textContent = isDark?'🌙 Theme':'☀️ Theme';
-  localStorage.setItem('theme', isDark?'light':'dark');
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('theme-btn').textContent = isDark ? '🌙 Theme' : '☀️ Theme';
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
 }
 
 init();
