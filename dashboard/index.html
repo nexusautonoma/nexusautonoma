@@ -563,6 +563,26 @@ async function showDashboard() {
   const { data: profile } = await sb.from('profiles').select('inbox_token, plan').eq('id', currentUser.id).single();
   const token = profile?.inbox_token || '';
   const plan = profile?.plan || 'starter';
+  if (!profile?.is_active) {
+  document.getElementById('auth-view').style.display = 'none';
+  document.getElementById('dash-view').style.display = 'none';
+  document.getElementById('app-loading').style.display = 'none';
+  document.body.innerHTML = `
+    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:'DM Sans',sans-serif;padding:20px">
+      <div style="max-width:420px;width:100%;text-align:center">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:#0f1f3d;margin-bottom:8px">RentSift</div>
+        <div style="font-size:14px;color:#8a8a7a;margin-bottom:32px">Agent Dashboard</div>
+        <div style="background:#fff;border:1px solid #e8e6df;border-radius:12px;padding:36px">
+          <div style="font-size:32px;margin-bottom:16px">🔒</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#1a1a14;margin-bottom:8px">No active subscription</div>
+          <p style="font-size:13px;color:#8a8a7a;line-height:1.6;margin-bottom:24px">Your account doesn't have an active RentSift subscription. Visit our website to get started.</p>
+          <a href="https://rentsift.co.uk/#pricing" style="display:inline-block;background:#0f1f3d;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600">View plans →</a>
+        </div>
+      </div>
+    </div>
+  `;
+  return;
+}
   const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
 
   document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
