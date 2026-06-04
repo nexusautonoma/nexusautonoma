@@ -574,9 +574,9 @@ async function showDashboard() {
 
   // Load profile (inbox token + plan)
   const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active').eq('id', currentUser.id).single();
-  const token = profile?.inbox_token || '';
-  const plan = profile?.plan || 'starter';
-  if (!profile?.is_active) {
+const token = profile?.inbox_token || '';
+const plan = profile?.plan || 'starter';
+if (!profile?.is_active) {
   document.getElementById('auth-view').style.display = 'none';
   document.getElementById('dash-view').style.display = 'none';
   document.getElementById('app-loading').style.display = 'none';
