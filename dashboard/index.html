@@ -11,54 +11,23 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#fafaf7;
-  --bg2:#f4f3ee;
-  --surface:#ffffff;
-  --surface2:#f8f7f2;
-  --border:#e8e6df;
-  --border2:#d4d1c8;
-  --text:#1a1a14;
-  --text2:#4a4a3e;
-  --muted:#8a8a7a;
-  --gold:#b8860b;
-  --gold-light:#d4a017;
-  --gold-pale:#fdf8ee;
-  --gold-border:#e8d5a0;
-  --navy:#0f1f3d;
-  --navy2:#1a3260;
-  --green:#059669;
-  --green-pale:#ecfdf5;
-  --green-border:#a7f3d0;
-  --amber:#d97706;
-  --amber-pale:#fffbeb;
-  --amber-border:#fde68a;
-  --red:#dc2626;
-  --red-pale:#fef2f2;
-  --red-border:#fecaca;
+  --bg:#fafaf7;--bg2:#f4f3ee;--surface:#ffffff;--surface2:#f8f7f2;
+  --border:#e8e6df;--border2:#d4d1c8;--text:#1a1a14;--text2:#4a4a3e;--muted:#8a8a7a;
+  --gold:#b8860b;--gold-light:#d4a017;--gold-pale:#fdf8ee;--gold-border:#e8d5a0;
+  --navy:#0f1f3d;--navy2:#1a3260;
+  --green:#059669;--green-pale:#ecfdf5;--green-border:#a7f3d0;
+  --amber:#d97706;--amber-pale:#fffbeb;--amber-border:#fde68a;
+  --red:#dc2626;--red-pale:#fef2f2;--red-border:#fecaca;
   --sidebar-w:256px;
 }
 [data-theme="dark"]{
-  --bg:#0d0d0a;
-  --bg2:#141410;
-  --surface:#1a1a14;
-  --surface2:#202018;
-  --border:#2a2a22;
-  --border2:#3a3a2e;
-  --text:#f0efe8;
-  --text2:#c8c8b4;
-  --muted:#6a6a5a;
-  --gold:#d4a017;
-  --gold-light:#e8b820;
-  --gold-pale:#1a180e;
-  --gold-border:#3a3018;
-  --navy:#1a2d4d;
-  --navy2:#243d66;
-  --green-pale:#052e16;
-  --green-border:#166534;
-  --amber-pale:#1c1200;
-  --amber-border:#78350f;
-  --red-pale:#1c0000;
-  --red-border:#7f1d1d;
+  --bg:#0d0d0a;--bg2:#141410;--surface:#1a1a14;--surface2:#202018;
+  --border:#2a2a22;--border2:#3a3a2e;--text:#f0efe8;--text2:#c8c8b4;--muted:#6a6a5a;
+  --gold:#d4a017;--gold-light:#e8b820;--gold-pale:#1a180e;--gold-border:#3a3018;
+  --navy:#1a2d4d;--navy2:#243d66;
+  --green-pale:#052e16;--green-border:#166534;
+  --amber-pale:#1c1200;--amber-border:#78350f;
+  --red-pale:#1c0000;--red-border:#7f1d1d;
 }
 html,body{height:100%;overflow:hidden}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
@@ -208,6 +177,10 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 .ai-box-text{font-size:13px;color:var(--text2);line-height:1.7}
 .message-box{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.7;font-style:italic}
 
+/* DELETE BTN */
+.delete-btn{width:100%;margin-top:16px;background:var(--red-pale);border:1px solid var(--red-border);color:var(--red);padding:10px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.delete-btn:hover{background:var(--red);color:white}
+
 /* SETUP PAGE */
 .setup-page{max-width:720px}
 .setup-header{margin-bottom:28px}
@@ -241,6 +214,19 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 .account-row:last-child{border-bottom:none}
 .account-row-label{color:var(--muted)}
 .account-row-value{font-weight:500;color:var(--text)}
+
+/* USAGE BARS */
+.usage-section{margin-top:4px}
+.usage-item{margin-bottom:14px}
+.usage-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.usage-label{font-size:12px;font-weight:600;color:var(--text2)}
+.usage-count{font-size:12px;color:var(--muted)}
+.usage-bar-track{height:6px;background:var(--border);border-radius:100px;overflow:hidden}
+.usage-bar-fill{height:100%;border-radius:100px;transition:width .5s ease;background:linear-gradient(90deg,var(--gold),var(--gold-light))}
+.usage-bar-fill.warn{background:linear-gradient(90deg,var(--amber),#f59e0b)}
+.usage-bar-fill.danger{background:linear-gradient(90deg,var(--red),#ef4444)}
+.upgrade-nudge{margin-top:12px;padding:10px 14px;background:var(--gold-pale);border:1px solid var(--gold-border);border-radius:8px;font-size:12px;color:var(--text2);text-align:center}
+.upgrade-nudge a{color:var(--gold);font-weight:600;text-decoration:none}
 
 /* TOAST */
 .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
@@ -289,7 +275,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
         <span class="auth-logo-tag">Agent Dashboard</span>
       </div>
     </a>
-
     <div id="login-form">
       <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Secure Access</span></div>
       <h1 class="auth-title">Welcome back</h1>
@@ -300,7 +285,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
       <button class="auth-btn" id="login-btn" onclick="handleLogin()">Sign in to dashboard</button>
       <div class="auth-toggle">New to RentSift? <a onclick="toggleForm('register')">Create your account</a></div>
     </div>
-
     <div id="register-form" style="display:none">
       <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Get Started</span></div>
       <h1 class="auth-title">Create account</h1>
@@ -404,7 +388,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
               <div class="stat-sub"><span class="stat-dot" style="background:var(--red)"></span>Automatically filtered</div>
             </div>
           </div>
-
           <div class="leads-panel">
             <div class="panel-header">
               <div class="panel-header-left">
@@ -446,7 +429,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
               <h2>Setup & Integration</h2>
               <p>Connect RentSift to your Rightmove account to automatically qualify enquiries.</p>
             </div>
-
             <div class="setup-card">
               <h4>Your unique RentSift inbox address</h4>
               <p>Set this as your contact email in Rightmove. Every enquiry sent to this address will be automatically qualified by AI and appear in your Lead Dashboard.</p>
@@ -461,7 +443,12 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                 </div>
                 <div class="setup-step">
                   <div class="step-num">2</div>
-                  <div class="step-text"><strong>Rightmove</strong> → Account Settings → Contact details → paste your RentSift address as your contact email</div>
+                  <div class="step-text">
+                    <strong>Rightmove Agent Hub</strong> → top-right menu → <strong>Account Settings</strong> → <strong>Branch details</strong> → scroll to <em>"Branch enquiry email"</em> → paste your RentSift address → Save
+                    <div style="margin-top:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;color:var(--muted);line-height:1.7">
+                      💡 <strong style="color:var(--text2)">Tip:</strong> After saving, send a test enquiry on your own listing to confirm it appears in your Lead Dashboard within 30 seconds.
+                    </div>
+                  </div>
                 </div>
                 <div class="setup-step">
                   <div class="step-num">3</div>
@@ -469,7 +456,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                 </div>
               </div>
             </div>
-
             <div class="setup-card">
               <h4>How it works</h4>
               <p>When a prospective tenant sends an enquiry through Rightmove, RentSift receives it, extracts the applicant's details, and runs an AI qualification check using UK letting standards — the 30× income rule, Right to Rent status, employment type, and urgency signals. You receive a scored result instantly.</p>
@@ -500,6 +486,23 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                 <div class="account-row"><span class="account-row-label">Status</span><span class="account-row-value" style="color:var(--green)">Active</span></div>
                 <div class="account-row"><span class="account-row-label">Data</span><span class="account-row-value">UK GDPR compliant</span></div>
                 <div class="account-row"><span class="account-row-label">Support</span><span class="account-row-value"><a href="mailto:hello@rentsift.co.uk" style="color:var(--gold)">hello@rentsift.co.uk</a></span></div>
+              </div>
+              <div class="account-card" style="grid-column:1/-1">
+                <h4>Usage This Month</h4>
+                <div class="usage-section">
+                  <div class="usage-item">
+                    <div class="usage-header">
+                      <span class="usage-label">Applicants Qualified</span>
+                      <span class="usage-count" id="usage-count-text">— / —</span>
+                    </div>
+                    <div class="usage-bar-track">
+                      <div class="usage-bar-fill" id="usage-bar" style="width:0%"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="upgrade-nudge" id="upgrade-nudge" style="display:none">
+                  Approaching your monthly limit. <a href="https://rentsift.co.uk/#pricing">Upgrade your plan →</a>
+                </div>
               </div>
             </div>
           </div>
@@ -535,8 +538,6 @@ async function init() {
     document.documentElement.setAttribute('data-theme', saved);
     document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀️ Theme' : '🌙 Theme';
   }
-
-  // Magic link hash'i varsa Supabase işlesin
   if (window.location.hash.includes('access_token')) {
     const { data, error } = await sb.auth.getSession();
     if (data?.session) {
@@ -547,7 +548,6 @@ async function init() {
       return;
     }
   }
-
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
@@ -566,42 +566,37 @@ function showAuth() {
 async function showDashboard() {
   document.getElementById('auth-view').style.display = 'none';
   document.getElementById('dash-view').style.display = 'block';
-
   const email = currentUser.email;
   document.getElementById('user-email-display').textContent = email;
   document.getElementById('user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
-
-  // Load profile (inbox token + plan)
   const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active').eq('id', currentUser.id).single();
-const token = profile?.inbox_token || '';
-const plan = profile?.plan || 'starter';
-if (!profile?.is_active) {
-  document.getElementById('auth-view').style.display = 'none';
-  document.getElementById('dash-view').style.display = 'none';
-  document.getElementById('app-loading').style.display = 'none';
-  document.body.innerHTML = `
-    <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:'DM Sans',sans-serif;padding:20px">
-      <div style="max-width:420px;width:100%;text-align:center">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:#0f1f3d;margin-bottom:8px">RentSift</div>
-        <div style="font-size:14px;color:#8a8a7a;margin-bottom:32px">Agent Dashboard</div>
-        <div style="background:#fff;border:1px solid #e8e6df;border-radius:12px;padding:36px">
-          <div style="font-size:32px;margin-bottom:16px">🔒</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#1a1a14;margin-bottom:8px">No active subscription</div>
-          <p style="font-size:13px;color:#8a8a7a;line-height:1.6;margin-bottom:24px">Your account doesn't have an active RentSift subscription. Visit our website to get started.</p>
-          <a href="https://rentsift.co.uk/#pricing" style="display:inline-block;background:#0f1f3d;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600">View plans →</a>
+  const token = profile?.inbox_token || '';
+  const plan = profile?.plan || 'starter';
+  if (!profile?.is_active) {
+    document.getElementById('auth-view').style.display = 'none';
+    document.getElementById('dash-view').style.display = 'none';
+    document.getElementById('app-loading').style.display = 'none';
+    document.body.innerHTML = `
+      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:'DM Sans',sans-serif;padding:20px">
+        <div style="max-width:420px;width:100%;text-align:center">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:#0f1f3d;margin-bottom:8px">RentSift</div>
+          <div style="font-size:14px;color:#8a8a7a;margin-bottom:32px">Agent Dashboard</div>
+          <div style="background:#fff;border:1px solid #e8e6df;border-radius:12px;padding:36px">
+            <div style="font-size:32px;margin-bottom:16px">🔒</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#1a1a14;margin-bottom:8px">No active subscription</div>
+            <p style="font-size:13px;color:#8a8a7a;line-height:1.6;margin-bottom:24px">Your account doesn't have an active RentSift subscription. Visit our website to get started.</p>
+            <a href="https://rentsift.co.uk/#pricing" style="display:inline-block;background:#0f1f3d;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600">View plans →</a>
+          </div>
         </div>
       </div>
-    </div>
-  `;
-  return;
-}
+    `;
+    return;
+  }
   const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
-
   document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
   document.getElementById('user-plan-display').textContent = planLabel;
   document.getElementById('account-plan-name').textContent = planLabel;
-
   await loadLeads();
 }
 
@@ -653,8 +648,8 @@ async function loadLeads() {
   allLeads = data || [];
   updateStats();
   renderLeads();
-  const suitableCount = allLeads.filter(l => l.status === 'Suitable').length;
-  document.getElementById('nav-badge').textContent = suitableCount;
+  document.getElementById('nav-badge').textContent = allLeads.filter(l => l.status === 'Suitable').length;
+  updateUsageBars();
 }
 
 function updateStats() {
@@ -734,12 +729,44 @@ function openModal(id) {
     </div>
     ${l.message ? `<div class="modal-section"><div class="modal-section-label">Applicant Message</div><div class="message-box">"${esc(l.message)}"</div></div>` : ''}
     ${l.analysis ? `<div class="modal-section"><div class="modal-section-label">AI Analysis</div><div class="ai-box"><div class="ai-box-label">✦ RentSift AI</div><div class="ai-box-text">${esc(l.analysis)}</div></div></div>` : ''}
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:8px">
+      <button class="delete-btn" onclick="deleteApplicant(${l.id}, '${esc(l.name)}')">🗑 Delete applicant data (GDPR)</button>
+    </div>
   `;
   document.getElementById('modal').classList.add('open');
 }
 
 function closeModal(e) {
   if (e.target === document.getElementById('modal')) document.getElementById('modal').classList.remove('open');
+}
+
+async function deleteApplicant(id, name) {
+  if (!confirm(`Permanently delete all data for ${name}? This cannot be undone.`)) return;
+  const { error } = await sb.from('leads').delete().eq('id', id);
+  if (error) { showToast('⚠ Delete failed: ' + error.message); return; }
+  allLeads = allLeads.filter(l => String(l.id) !== String(id));
+  updateStats();
+  renderLeads();
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('nav-badge').textContent = allLeads.filter(l => l.status === 'Suitable').length;
+  updateUsageBars();
+  showToast('✓ Applicant data permanently deleted');
+}
+
+function updateUsageBars() {
+  const planLimits = { starter: 50, professional: 150, agency: Infinity };
+  const planText = (document.getElementById('user-plan-display').textContent || '').toLowerCase().replace(' plan','').trim();
+  const limit = planLimits[planText] || 50;
+  const used = allLeads.length;
+  const pct = limit === Infinity ? 0 : Math.min((used / limit) * 100, 100);
+  const bar = document.getElementById('usage-bar');
+  const countText = document.getElementById('usage-count-text');
+  const nudge = document.getElementById('upgrade-nudge');
+  if (!bar) return;
+  bar.style.width = pct + '%';
+  countText.textContent = limit === Infinity ? `${used} / Unlimited` : `${used} / ${limit}`;
+  bar.className = 'usage-bar-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
+  if (nudge) nudge.style.display = pct >= 80 ? 'block' : 'none';
 }
 
 function showSection(name, btn) {
