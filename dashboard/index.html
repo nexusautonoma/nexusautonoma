@@ -557,7 +557,6 @@ async function init() {
   }
   document.getElementById('app-loading').style.display = 'none';
 }
-}
 
 function showAuth() {
   document.getElementById('auth-view').style.display = 'flex';
@@ -574,7 +573,7 @@ async function showDashboard() {
   document.getElementById('account-email').textContent = email;
 
   // Load profile (inbox token + plan)
-  const { data: profile } = await sb.from('profiles').select('inbox_token, plan').eq('id', currentUser.id).single();
+  const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active').eq('id', currentUser.id).single();
   const token = profile?.inbox_token || '';
   const plan = profile?.plan || 'starter';
   if (!profile?.is_active) {
