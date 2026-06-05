@@ -645,6 +645,9 @@ if(saved){
   document.documentElement.setAttribute('data-theme',saved);
   document.getElementById('theme-btn').textContent=saved==='dark'?'☀️':'🌙';
 }
+  const hash = window.location.hash;
+if(hash === '#privacy') showPage('privacy');
+if(hash === '#terms') showPage('terms');
 </script>
 </body>
 </html>
