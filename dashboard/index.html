@@ -260,7 +260,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
       </div>
     </a>
 
-    <!-- LOGIN -->
     <div id="login-panel">
       <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Secure Access</span></div>
       <h1 class="auth-title">Welcome back</h1>
@@ -274,7 +273,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
       </div>
     </div>
 
-    <!-- FORGOT PASSWORD -->
     <div id="forgot-panel" style="display:none">
       <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Reset Password</span></div>
       <h1 class="auth-title">Reset password</h1>
@@ -288,7 +286,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
       </div>
     </div>
 
-    <!-- SET NEW PASSWORD (after reset link click) -->
     <div id="reset-panel" style="display:none">
       <div class="auth-eyebrow"><div class="auth-eyebrow-line"></div><span class="auth-eyebrow-text">Set Password</span></div>
       <h1 class="auth-title">Set your password</h1>
@@ -447,14 +444,12 @@ async function init() {
     document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀️ Theme' : '🌙 Theme';
   }
 
-  // Handle password reset callback
   const hash = window.location.hash;
   if (hash.includes('type=recovery') || hash.includes('type=signup')) {
-    const { data, error } = await sb.auth.getSession();
+    const { data } = await sb.auth.getSession();
     if (data?.session) {
       currentUser = data.session.user;
       window.history.replaceState({}, document.title, window.location.pathname);
-      // Show set password panel
       document.getElementById('app-loading').style.display = 'none';
       document.getElementById('auth-view').style.display = 'flex';
       showPanel('reset');
@@ -462,7 +457,6 @@ async function init() {
     }
   }
 
-  // Handle magic link / any other token in URL
   if (hash.includes('access_token')) {
     const { data } = await sb.auth.getSession();
     if (data?.session) {
@@ -555,7 +549,22 @@ async function showDashboard() {
     document.getElementById('auth-view').style.display = 'none';
     document.getElementById('dash-view').style.display = 'none';
     document.getElementById('app-loading').style.display = 'none';
-    document.body.innerHTML = `<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg);font-family:'DM Sans',sans-serif;padding:20px"><div style="max-width:420px;width:100%;text-align:center"><div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:#0f1f3d;margin-bottom:8px">RentSift</div><div style="font-size:14px;color:#8a8a7a;margin-bottom:32px">Agent Dashboard</div><div style="background:#fff;border:1px solid #e8e6df;border-radius:12px;padding:36px"><div style="font-size:32px;margin-bottom:16px">🔒</div><div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#1a1a14;margin-bottom:8px">No active subscription</div><p style="font-size:13px;color:#8a8a7a;line-height:1.6;margin-bottom:24px">Your account doesn't have an active RentSift subscription. Visit our website to get started.</p><a href="https://rentsift.co.uk/#pricing" style="display:inline-block;background:#0f1f3d;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600">View plans →</a></div></div></div>`;
+    document.body.innerHTML = `
+      <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:#fafaf7;font-family:'DM Sans',sans-serif;padding:20px">
+        <div style="max-width:420px;width:100%;text-align:center">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:700;color:#0f1f3d;margin-bottom:8px">RentSift</div>
+          <div style="font-size:14px;color:#8a8a7a;margin-bottom:32px">Agent Dashboard</div>
+          <div style="background:#fff;border:1px solid #e8e6df;border-radius:12px;padding:36px">
+            <div style="font-size:32px;margin-bottom:16px">🔒</div>
+            <div style="font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:#1a1a14;margin-bottom:8px">No active subscription</div>
+            <p style="font-size:13px;color:#8a8a7a;line-height:1.6;margin-bottom:24px">Your account doesn't have an active RentSift subscription. Visit our website to get started.</p>
+            <a href="https://rentsift.co.uk/#pricing" style="display:inline-block;background:#0f1f3d;color:white;padding:12px 28px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:600">View plans →</a>
+            <div style="margin-top:16px">
+              <button onclick="signOutAndReturn()" style="background:none;border:none;font-size:13px;color:#8a8a7a;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:'DM Sans',sans-serif">← Sign out and try another account</button>
+            </div>
+          </div>
+        </div>
+      </div>`;
     return;
   }
   const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
@@ -563,6 +572,11 @@ async function showDashboard() {
   document.getElementById('user-plan-display').textContent = planLabel;
   document.getElementById('account-plan-name').textContent = planLabel;
   await loadLeads();
+}
+
+async function signOutAndReturn() {
+  await sb.auth.signOut();
+  window.location.reload();
 }
 
 async function handleLogout() {
