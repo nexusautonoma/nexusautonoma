@@ -89,6 +89,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .sidebar-action-btn:hover{background:rgba(255,255,255,0.1);color:white}
 .logout-btn:hover{background:rgba(220,38,38,0.15);border-color:rgba(220,38,38,0.3);color:#f87171}
 
+/* ── Mobile drawer ── */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;backdrop-filter:blur(2px)}
+.drawer-overlay.open{display:block}
+.mobile-sidebar{position:fixed;top:0;left:0;height:100%;width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;z-index:201;transform:translateX(-100%);transition:transform .25s ease}
+.mobile-sidebar.open{transform:translateX(0)}
+.hamburger-btn{display:none;align-items:center;justify-content:center;width:34px;height:34px;border-radius:8px;background:var(--surface2);border:1px solid var(--border);cursor:pointer;color:var(--text2);font-size:18px;line-height:1;transition:all .2s;flex-shrink:0}
+.hamburger-btn:hover{border-color:var(--gold);color:var(--gold)}
+
 #dash-view{display:none;height:100vh;overflow:hidden}
 .dash-layout{display:flex;height:100vh}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
@@ -220,9 +228,11 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 
 @media(max-width:768px){
   .sidebar{display:none}
+  .hamburger-btn{display:flex}
   .stats-row{grid-template-columns:repeat(2,1fr)}
   .detail-grid,.account-grid{grid-template-columns:1fr}
   .content{padding:16px}
+  .topbar{padding:0 16px}
 }
 </style>
 </head>
@@ -299,6 +309,58 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
   </div>
 </div>
 
+<!-- Mobile drawer overlay -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+
+<!-- Mobile sidebar drawer -->
+<div class="mobile-sidebar" id="mobile-sidebar">
+  <div class="sidebar-header">
+    <button class="sidebar-brand" onclick="window.open('https://rentsift.co.uk','_blank')">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="36" height="36" rx="8" fill="rgba(255,255,255,0.08)"/>
+        <path d="M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z" fill="#d4a017"/>
+        <rect x="9" y="19" width="18" height="3" rx="1.5" fill="#d4a017" opacity="0.8"/>
+        <rect x="11" y="23" width="14" height="7" rx="2" fill="#d4a017" opacity="0.6"/>
+        <rect x="9" y="28" width="18" height="2" rx="1" fill="#d4a017"/>
+      </svg>
+      <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">RentSift</span>
+        <span class="sidebar-brand-tag">Agent Portal</span>
+      </div>
+    </button>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Main</div>
+    <button class="nav-item active" id="mob-nav-leads" onclick="showSection('leads',this);closeDrawer()">
+      <span class="nav-icon">📊</span>Lead Dashboard
+      <span class="nav-item-badge" id="mob-nav-badge">0</span>
+    </button>
+    <button class="nav-item" id="mob-nav-setup" onclick="showSection('setup',this);closeDrawer()">
+      <span class="nav-icon">⚙️</span>Setup & Integration
+    </button>
+    <div class="nav-section-label">Account</div>
+    <button class="nav-item" id="mob-nav-account" onclick="showSection('account',this);closeDrawer()">
+      <span class="nav-icon">👤</span>My Account
+    </button>
+    <a class="nav-item" href="mailto:hello@rentsift.co.uk" onclick="closeDrawer()">
+      <span class="nav-icon">✉️</span>Support
+    </a>
+  </nav>
+  <div class="sidebar-bottom">
+    <div class="user-block">
+      <div class="user-av" id="mob-user-av">?</div>
+      <div class="user-info">
+        <div class="user-email" id="mob-user-email-display">Loading...</div>
+        <div class="user-plan" id="mob-user-plan-display">—</div>
+      </div>
+    </div>
+    <div class="sidebar-actions">
+      <button class="sidebar-action-btn" onclick="toggleTheme()" id="mob-theme-btn">🌙 Theme</button>
+      <button class="sidebar-action-btn logout-btn" onclick="handleLogout()">↩ Sign out</button>
+    </div>
+  </div>
+</div>
+
 <div id="dash-view">
   <div class="dash-layout">
     <div class="sidebar">
@@ -351,7 +413,10 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 
     <div class="main">
       <div class="topbar">
-        <div class="topbar-left"><span class="topbar-title" id="topbar-title">Lead Dashboard</span></div>
+        <div class="topbar-left">
+          <button class="hamburger-btn" id="hamburger-btn" onclick="openDrawer()" aria-label="Open menu">☰</button>
+          <span class="topbar-title" id="topbar-title">Lead Dashboard</span>
+        </div>
         <div class="topbar-right"><button class="topbar-btn" onclick="loadLeads()" title="Refresh">↻</button></div>
       </div>
       <div class="content">
@@ -431,6 +496,18 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 let allLeads = [], currentFilter = 'all', currentUser = null;
 
+function openDrawer() {
+  document.getElementById('mobile-sidebar').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeDrawer() {
+  document.getElementById('mobile-sidebar').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
 function showPanel(name) {
   ['login-panel','forgot-panel','reset-panel'].forEach(p => {
     document.getElementById(p).style.display = p === name+'-panel' ? 'block' : 'none';
@@ -442,6 +519,7 @@ async function init() {
   if (saved) {
     document.documentElement.setAttribute('data-theme', saved);
     document.getElementById('theme-btn').textContent = saved === 'dark' ? '☀️ Theme' : '🌙 Theme';
+    document.getElementById('mob-theme-btn').textContent = saved === 'dark' ? '☀️ Theme' : '🌙 Theme';
   }
 
   const hash = window.location.hash;
@@ -541,6 +619,8 @@ async function showDashboard() {
   const email = currentUser.email;
   document.getElementById('user-email-display').textContent = email;
   document.getElementById('user-av').textContent = email[0].toUpperCase();
+  document.getElementById('mob-user-email-display').textContent = email;
+  document.getElementById('mob-user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
   const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active').eq('id', currentUser.id).single();
   const token = profile?.inbox_token || '';
@@ -570,6 +650,7 @@ async function showDashboard() {
   const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
   document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
   document.getElementById('user-plan-display').textContent = planLabel;
+  document.getElementById('mob-user-plan-display').textContent = planLabel;
   document.getElementById('account-plan-name').textContent = planLabel;
   await loadLeads();
 }
@@ -584,6 +665,7 @@ async function handleLogout() {
   currentUser = null; allLeads = [];
   document.getElementById('login-password').value = '';
   document.getElementById('login-error').style.display = 'none';
+  closeDrawer();
   showAuth();
 }
 
@@ -592,7 +674,9 @@ async function loadLeads() {
   if (error) { console.error(error); return; }
   allLeads = data || [];
   updateStats(); renderLeads();
-  document.getElementById('nav-badge').textContent = allLeads.filter(l => l.status === 'Suitable').length;
+  const suitableCount = allLeads.filter(l => l.status === 'Suitable').length;
+  document.getElementById('nav-badge').textContent = suitableCount;
+  document.getElementById('mob-nav-badge').textContent = suitableCount;
   updateUsageBars();
 }
 
@@ -665,7 +749,9 @@ async function deleteApplicant(id, name) {
   allLeads = allLeads.filter(l => String(l.id) !== String(id));
   updateStats(); renderLeads();
   document.getElementById('modal').classList.remove('open');
-  document.getElementById('nav-badge').textContent = allLeads.filter(l => l.status === 'Suitable').length;
+  const suitableCount = allLeads.filter(l => l.status === 'Suitable').length;
+  document.getElementById('nav-badge').textContent = suitableCount;
+  document.getElementById('mob-nav-badge').textContent = suitableCount;
   updateUsageBars();
   showToast('✓ Applicant data permanently deleted');
 }
@@ -688,8 +774,12 @@ function updateUsageBars() {
 function showSection(name, btn) {
   document.querySelectorAll('#section-leads,#section-setup,#section-account').forEach(s => s.style.display = 'none');
   document.getElementById('section-'+name).style.display = 'block';
+  // Update active state on both desktop and mobile navs
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (btn) btn.classList.add('active');
+  // Sync the sibling nav (desktop↔mobile)
+  const map = { leads:['nav-leads','mob-nav-leads'], setup:['nav-setup','mob-nav-setup'], account:['nav-account','mob-nav-account'] };
+  if (map[name]) map[name].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('active'); });
   const titles = { leads:'Lead Dashboard', setup:'Setup & Integration', account:'My Account' };
   document.getElementById('topbar-title').textContent = titles[name] || 'Dashboard';
 }
@@ -711,7 +801,9 @@ function toggleTheme() {
   const html = document.documentElement;
   const isDark = html.getAttribute('data-theme') === 'dark';
   html.setAttribute('data-theme', isDark ? 'light' : 'dark');
-  document.getElementById('theme-btn').textContent = isDark ? '🌙 Theme' : '☀️ Theme';
+  const label = isDark ? '🌙 Theme' : '☀️ Theme';
+  document.getElementById('theme-btn').textContent = label;
+  document.getElementById('mob-theme-btn').textContent = label;
   localStorage.setItem('theme', isDark ? 'light' : 'dark');
 }
 
