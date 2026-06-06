@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /apply
+
+Sitemap: https://rentsift.co.uk/sitemap.xml
