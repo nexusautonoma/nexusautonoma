@@ -670,7 +670,7 @@ async function handleLogout() {
 }
 
 async function loadLeads() {
-  const { data, error } = await sb.from('leads').select('*').order('created_at', { ascending: false });
+  const { data, error } = await sb.from('leads').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
   if (error) { console.error(error); return; }
   allLeads = data || [];
   updateStats(); renderLeads();
