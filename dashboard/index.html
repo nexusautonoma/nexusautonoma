@@ -739,6 +739,7 @@ function openModal(id) {
       <div class="detail-item"><div class="detail-label">Employment</div><div class="detail-value">${esc(l.employment)||'—'}</div></div>
       <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value">${esc(l.region)||'—'}</div></div>
       <div class="detail-item"><div class="detail-label">Right to Rent</div><div class="detail-value">${esc(l.right_to_rent)||'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Property</div><div class="detail-value">${esc(l.property_address)||'—'}</div></div>
       <div class="detail-item"><div class="detail-label">Received</div><div class="detail-value">${l.created_at?new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—'}</div></div>
     </div></div>
     ${l.message?`<div class="modal-section"><div class="modal-section-label">Applicant Message</div><div class="message-box">"${esc(l.message)}"</div></div>`:''}
