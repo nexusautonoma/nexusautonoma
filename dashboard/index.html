@@ -457,6 +457,14 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                 <span class="inbox-address" id="inbox-address-display">Loading...</span>
                 <button class="copy-btn" onclick="copyInboxEmail()">Copy</button>
               </div>
+              <div style="margin-top:12px">
+  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Your applicant form link</div>
+  <div class="inbox-address-box">
+    <span class="inbox-address" id="apply-link-display">Loading...</span>
+    <button class="copy-btn" onclick="copyApplyLink()">Copy</button>
+  </div>
+  <div style="font-size:12px;color:var(--muted);margin-top:8px">Share this link on your website, social media, or send directly to applicants.</div>
+</div>
               <div class="setup-steps">
                 <div class="setup-step"><div class="step-num">1</div><div class="step-text">Copy your unique address above</div></div>
                 <div class="setup-step"><div class="step-num">2</div><div class="step-text"><strong>Rightmove Agent Hub</strong> → top-right menu → <strong>Account Settings</strong> → <strong>Branch details</strong> → scroll to <em>"Branch enquiry email"</em> → paste your RentSift address → Save<div style="margin-top:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;color:var(--muted);line-height:1.7">💡 <strong style="color:var(--text2)">Tip:</strong> After saving, send a test enquiry on your own listing to confirm it appears in your Lead Dashboard within 30 seconds.</div></div></div>
@@ -649,6 +657,7 @@ async function showDashboard() {
   }
   const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
   document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
+  document.getElementById('apply-link-display').textContent = currentUser ? `https://rentsift.co.uk/apply?agent=${currentUser.id}` : 'Not available';
   document.getElementById('user-plan-display').textContent = planLabel;
   document.getElementById('mob-user-plan-display').textContent = planLabel;
   document.getElementById('account-plan-name').textContent = planLabel;
@@ -788,6 +797,12 @@ function copyInboxEmail() {
   const addr = document.getElementById('inbox-address-display').textContent;
   if (addr === 'Loading...' || addr === 'Not available') return;
   navigator.clipboard.writeText(addr).then(() => showToast('✓ Inbox address copied'));
+}
+
+function copyApplyLink() {
+  const link = document.getElementById('apply-link-display').textContent;
+  if (link === 'Loading...') return;
+  navigator.clipboard.writeText(link).then(() => showToast('✓ Apply link copied'));
 }
 
 function showToast(msg) {
