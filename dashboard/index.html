@@ -89,7 +89,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .sidebar-action-btn:hover{background:rgba(255,255,255,0.1);color:white}
 .logout-btn:hover{background:rgba(220,38,38,0.15);border-color:rgba(220,38,38,0.3);color:#f87171}
 
-/* ── Mobile drawer ── */
 .drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;backdrop-filter:blur(2px)}
 .drawer-overlay.open{display:block}
 .mobile-sidebar{position:fixed;top:0;left:0;height:100%;width:var(--sidebar-w);background:var(--navy);display:flex;flex-direction:column;z-index:201;transform:translateX(-100%);transition:transform .25s ease}
@@ -309,10 +308,8 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
   </div>
 </div>
 
-<!-- Mobile drawer overlay -->
 <div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
 
-<!-- Mobile sidebar drawer -->
 <div class="mobile-sidebar" id="mobile-sidebar">
   <div class="sidebar-header">
     <button class="sidebar-brand" onclick="window.open('https://rentsift.co.uk','_blank')">
@@ -430,7 +427,7 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
           </div>
           <div class="leads-panel">
             <div class="panel-header">
-              <div class="panel-header-left"><h3>Applicant Leads</h3><p>Click any row to view the full AI qualification report</p></div>
+              <div class="panel-header-left"><h3>Applicant Leads</h3><p>Click any row to view the full AI screening report</p></div>
               <div class="filter-row">
                 <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
                 <button class="filter-btn" onclick="filterLeads('Suitable',this)">✅ Suitable</button>
@@ -449,29 +446,29 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 
         <div id="section-setup" style="display:none">
           <div class="setup-page">
-            <div class="setup-header"><h2>Setup & Integration</h2><p>Connect RentSift to your Rightmove account to automatically qualify enquiries.</p></div>
+            <div class="setup-header"><h2>Setup & Integration</h2><p>Connect RentSift to your Rightmove account to automatically screen enquiries.</p></div>
             <div class="setup-card">
               <h4>Your unique RentSift inbox address</h4>
-              <p>Set this as your contact email in Rightmove. Every enquiry sent to this address will be automatically qualified by AI and appear in your Lead Dashboard.</p>
+              <p>Set this as your contact email in Rightmove. Every enquiry sent to this address will be automatically analysed by AI and appear in your Lead Dashboard.</p>
               <div class="inbox-address-box">
                 <span class="inbox-address" id="inbox-address-display">Loading...</span>
                 <button class="copy-btn" onclick="copyInboxEmail()">Copy</button>
               </div>
               <div style="margin-top:12px">
-  <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Your applicant form link</div>
-  <div class="inbox-address-box">
-    <span class="inbox-address" id="apply-link-display">Loading...</span>
-    <button class="copy-btn" onclick="copyApplyLink()">Copy</button>
-  </div>
-  <div style="font-size:12px;color:var(--muted);margin-top:8px">Share this link on your website, social media, or send directly to applicants.</div>
-</div>
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:8px">Your applicant form link</div>
+                <div class="inbox-address-box">
+                  <span class="inbox-address" id="apply-link-display">Loading...</span>
+                  <button class="copy-btn" onclick="copyApplyLink()">Copy</button>
+                </div>
+                <div style="font-size:12px;color:var(--muted);margin-top:8px">Share this link on your website, social media, or send directly to applicants.</div>
+              </div>
               <div class="setup-steps">
                 <div class="setup-step"><div class="step-num">1</div><div class="step-text">Copy your unique address above</div></div>
                 <div class="setup-step"><div class="step-num">2</div><div class="step-text"><strong>Rightmove Agent Hub</strong> → top-right menu → <strong>Account Settings</strong> → <strong>Branch details</strong> → scroll to <em>"Branch enquiry email"</em> → paste your RentSift address → Save<div style="margin-top:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;color:var(--muted);line-height:1.7">💡 <strong style="color:var(--text2)">Tip:</strong> After saving, send a test enquiry on your own listing to confirm it appears in your Lead Dashboard within 30 seconds.</div></div></div>
-                <div class="setup-step"><div class="step-num">3</div><div class="step-text">Every new Rightmove enquiry is automatically qualified — results appear in your <strong>Lead Dashboard</strong> within seconds</div></div>
+                <div class="setup-step"><div class="step-num">3</div><div class="step-text">Every new Rightmove enquiry is automatically screened — results appear in your <strong>Lead Dashboard</strong> within seconds</div></div>
               </div>
             </div>
-            <div class="setup-card"><h4>How it works</h4><p>When a prospective tenant sends an enquiry through Rightmove, RentSift receives it, extracts the applicant's details, and runs an AI qualification check using UK letting standards — the 30× income rule, Right to Rent status, employment type, and urgency signals. You receive a scored result instantly.</p></div>
+            <div class="setup-card"><h4>How it works</h4><p>When a prospective tenant sends an enquiry through Rightmove, RentSift receives it, extracts the applicant's details, and runs an AI screening check using UK letting standards — income thresholds, document readiness, employment type, and urgency signals. You receive a scored result instantly.</p></div>
           </div>
         </div>
 
@@ -481,7 +478,7 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
             <div class="account-grid">
               <div class="account-card"><h4>Subscription</h4><div class="plan-badge-card"><span class="plan-badge-name" id="account-plan-name">—</span><span class="plan-badge-status">Active</span></div><div class="account-row"><span class="account-row-label">Billing</span><span class="account-row-value">Monthly</span></div><div class="account-row"><span class="account-row-label">Manage</span><span class="account-row-value"><a href="mailto:hello@rentsift.co.uk?subject=Subscription" style="color:var(--gold)">Contact us</a></span></div></div>
               <div class="account-card"><h4>Account Details</h4><div class="account-row"><span class="account-row-label">Email</span><span class="account-row-value" id="account-email">—</span></div><div class="account-row"><span class="account-row-label">Status</span><span class="account-row-value" style="color:var(--green)">Active</span></div><div class="account-row"><span class="account-row-label">Data</span><span class="account-row-value">UK GDPR compliant</span></div><div class="account-row"><span class="account-row-label">Support</span><span class="account-row-value"><a href="mailto:hello@rentsift.co.uk" style="color:var(--gold)">hello@rentsift.co.uk</a></span></div></div>
-              <div class="account-card" style="grid-column:1/-1"><h4>Usage This Month</h4><div class="usage-section"><div class="usage-item"><div class="usage-header"><span class="usage-label">Applicants Qualified</span><span class="usage-count" id="usage-count-text">— / —</span></div><div class="usage-bar-track"><div class="usage-bar-fill" id="usage-bar" style="width:0%"></div></div></div></div><div class="upgrade-nudge" id="upgrade-nudge" style="display:none">Approaching your monthly limit. <a href="https://rentsift.co.uk/#pricing">Upgrade your plan →</a></div></div>
+              <div class="account-card" style="grid-column:1/-1"><h4>Usage This Month</h4><div class="usage-section"><div class="usage-item"><div class="usage-header"><span class="usage-label">Applicants Screened</span><span class="usage-count" id="usage-count-text">— / —</span></div><div class="usage-bar-track"><div class="usage-bar-fill" id="usage-bar" style="width:0%"></div></div></div></div><div class="upgrade-nudge" id="upgrade-nudge" style="display:none">Approaching your monthly limit. <a href="https://rentsift.co.uk/#pricing">Upgrade your plan →</a></div></div>
             </div>
           </div>
         </div>
@@ -707,7 +704,7 @@ function renderLeads() {
   const leads = currentFilter === 'all' ? allLeads : allLeads.filter(l => l.status === currentFilter);
   const tbody = document.getElementById('leads-tbody');
   if (!leads.length) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads yet</div><div class="empty-sub">Set up your Rightmove integration to start receiving qualified applicants</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads yet</div><div class="empty-sub">Set up your Rightmove integration to start receiving screened applicants</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML = leads.map(l => {
@@ -730,7 +727,7 @@ function openModal(id) {
   const st = l.status==='Suitable'?'st-q':l.status==='Further assessment required'?'st-p':'st-r';
   document.getElementById('modal-content').innerHTML = `
     <div class="modal-header"><div><div class="modal-title">${esc(l.name)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(l.email)}</div></div><button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button></div>
-    <div class="score-banner"><div class="score-circle ${sc}">${l.score||'—'}</div><div class="score-info"><h4>AI Qualification Score</h4><span class="status-chip ${st}" style="margin-top:4px;display:inline-flex">${l.status||'—'}</span></div></div>
+    <div class="score-banner"><div class="score-circle ${sc}">${l.score||'—'}</div><div class="score-info"><h4>AI Screening Score</h4><span class="status-chip ${st}" style="margin-top:4px;display:inline-flex">${l.status||'—'}</span></div></div>
     <div class="modal-section"><div class="modal-section-label">Applicant Details</div><div class="detail-grid">
       <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${esc(l.email)}</div></div>
       <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">${esc(l.phone)||'—'}</div></div>
@@ -738,7 +735,7 @@ function openModal(id) {
       <div class="detail-item"><div class="detail-label">Annual Income</div><div class="detail-value">${l.annual_income?'£'+l.annual_income:'—'}</div></div>
       <div class="detail-item"><div class="detail-label">Employment</div><div class="detail-value">${esc(l.employment)||'—'}</div></div>
       <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value">${esc(l.region)||'—'}</div></div>
-      <div class="detail-item"><div class="detail-label">Right to Rent</div><div class="detail-value">${esc(l.right_to_rent)||'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Document Status</div><div class="detail-value">${esc(l.right_to_rent)||'—'}</div></div>
       <div class="detail-item"><div class="detail-label">Property</div><div class="detail-value">${esc(l.property_address)||'—'}</div></div>
       <div class="detail-item"><div class="detail-label">Received</div><div class="detail-value">${l.created_at?new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—'}</div></div>
     </div></div>
@@ -784,10 +781,8 @@ function updateUsageBars() {
 function showSection(name, btn) {
   document.querySelectorAll('#section-leads,#section-setup,#section-account').forEach(s => s.style.display = 'none');
   document.getElementById('section-'+name).style.display = 'block';
-  // Update active state on both desktop and mobile navs
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   if (btn) btn.classList.add('active');
-  // Sync the sibling nav (desktop↔mobile)
   const map = { leads:['nav-leads','mob-nav-leads'], setup:['nav-setup','mob-nav-setup'], account:['nav-account','mob-nav-account'] };
   if (map[name]) map[name].forEach(id => { const el = document.getElementById(id); if(el) el.classList.add('active'); });
   const titles = { leads:'Lead Dashboard', setup:'Setup & Integration', account:'My Account' };
