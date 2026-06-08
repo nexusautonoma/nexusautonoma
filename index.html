@@ -508,6 +508,32 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
   </div>
 </div>
 
+<!-- REFUND POLICY -->
+<div id="page-refund" class="legal-page">
+  <div class="legal-wrap">
+    <div class="section-eyebrow"><div class="eyebrow-line"></div><span class="eyebrow-text">Legal</span></div>
+    <h1>Refund Policy</h1>
+    <p class="legal-date">Last updated: 1 January 2025 · Governed by the laws of England and Wales</p>
+    <h2>1. Subscription Cancellation</h2>
+    <p>You may cancel your RentSift subscription at any time. Cancellation takes effect at the end of your current billing period. You will retain full access to your account until that date.</p>
+    <h2>2. Refund Eligibility</h2>
+    <p>We offer a full refund within 14 days of your initial subscription purchase if you are not satisfied with the service. To request a refund, contact us at <a href="mailto:hello@rentsift.co.uk">hello@rentsift.co.uk</a> within 14 days of your purchase date.</p>
+    <h2>3. Non-Refundable Circumstances</h2>
+    <p>Refunds are not available for:</p>
+    <ul>
+      <li>Renewal charges where cancellation was not requested before the renewal date</li>
+      <li>Partial months of service following a mid-cycle cancellation</li>
+      <li>Accounts found to be in breach of our Terms of Service</li>
+    </ul>
+    <h2>4. How to Request a Refund</h2>
+    <p>To request a refund, please email <a href="mailto:hello@rentsift.co.uk">hello@rentsift.co.uk</a> with your account email address and the reason for your request. We will respond within 3 business days.</p>
+    <h2>5. Processing</h2>
+    <p>Approved refunds are processed within 5–10 business days and returned to the original payment method.</p>
+    <h2>6. Contact</h2>
+    <p>For all refund-related queries: <a href="mailto:hello@rentsift.co.uk">hello@rentsift.co.uk</a></p>
+  </div>
+</div>
+
 <!-- TERMS OF SERVICE -->
 <div id="page-terms" class="legal-page">
   <div class="legal-wrap">
@@ -592,6 +618,7 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
         <h4>Legal</h4>
         <a onclick="showPage('privacy')">Privacy Policy</a>
         <a onclick="showPage('terms')">Terms of Service</a>
+        <a onclick="showPage('refund')">Refund Policy</a>
       </div>
     </div>
     <div class="footer-bottom">
@@ -599,6 +626,7 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
       <div class="footer-legal">
         <a onclick="showPage('privacy')">Privacy</a>
         <a onclick="showPage('terms')">Terms</a>
+        <a onclick="showPage('refund')">Refund</a>
         <a onclick="showPage('contact')">Contact</a>
       </div>
     </div>
@@ -636,6 +664,7 @@ window.addEventListener('load', function() {
   const hash = window.location.hash;
   if(hash === '#privacy') showPage('privacy');
   if(hash === '#terms') showPage('terms');
+  if(hash === '#refund') showPage('refund');
 });
 </script>
 </body>
