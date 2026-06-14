@@ -125,10 +125,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .panel-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .panel-header-left h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text)}
 .panel-header-left p{font-size:12px;color:var(--muted);margin-top:1px}
-.filter-row{display:flex;gap:4px;flex-wrap:wrap}
-.filter-btn{padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;font-family:'DM Sans',sans-serif}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+/* Madde 10: Search input */
+.search-input{padding:7px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;width:220px;outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--gold)}
+.filter-btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:4px}
 .filter-btn:hover{background:var(--bg2);color:var(--text)}
 .filter-btn.active{background:var(--navy);color:white;border-color:var(--navy)}
+
 .table-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse}
 thead tr{background:var(--bg2);border-bottom:1px solid var(--border)}
@@ -192,9 +196,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 .copy-btn:hover{background:var(--gold);transform:translateY(-1px)}
 .setup-steps{display:flex;flex-direction:column;gap:12px;margin-top:20px}
 .setup-step{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:10px}
-.step-num{width:26px;height:26px;border-radius:50%;background:var(--navy);color:white;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
-.step-text{font-size:13px;color:var(--text2);line-height:1.6}
-.step-text strong{color:var(--text);font-weight:600}
 
 .account-page{max-width:720px}
 .account-header{margin-bottom:28px}
@@ -428,10 +429,12 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
             <div class="panel-header">
               <div class="panel-header-left"><h3>Applicant Leads</h3><p>Click any row to view the full AI screening report</p></div>
               <div class="filter-row">
+                <input type="text" class="search-input" id="search-input" placeholder="Search by name or email..." onkeyup="handleSearch()">
                 <button class="filter-btn active" onclick="filterLeads('all',this)">All</button>
                 <button class="filter-btn" onclick="filterLeads('Suitable',this)">✅ Suitable</button>
                 <button class="filter-btn" onclick="filterLeads('Further assessment required',this)">⏳ Pending</button>
                 <button class="filter-btn" onclick="filterLeads('Unsuitable',this)">❌ Unsuitable</button>
+                <button class="filter-btn" onclick="exportCSV()" style="margin-left:auto">📥 Export CSV</button>
               </div>
             </div>
             <div class="table-wrap">
@@ -462,9 +465,10 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                 <div style="font-size:12px;color:var(--muted);margin-top:8px">Share this link on your website, social media, or send directly to applicants.</div>
               </div>
               <div class="setup-steps">
-                <div class="setup-step"><div class="step-num">1</div><div class="step-text">Copy your unique address above</div></div>
-                <div class="setup-step"><div class="step-num">2</div><div class="step-text"><strong>Rightmove Agent Hub</strong> → top-right menu → <strong>Account Settings</strong> → <strong>Branch details</strong> → scroll to <em>"Branch enquiry email"</em> → paste your RentSift address → Save<div style="margin-top:10px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:11px;color:var(--muted);line-height:1.7">💡 <strong style="color:var(--text2)">Tip:</strong> After saving, send a test enquiry on your own listing to confirm it appears in your Lead Dashboard within 30 seconds.</div></div></div>
-                <div class="setup-step"><div class="step-num">3</div><div class="step-text">Every new Rightmove enquiry is automatically screened — results appear in your <strong>Lead Dashboard</strong> within seconds</div></div>
+                <div class="setup-step"><div class="step-num">1</div><div class="step-text">Copy your unique inbox address above</div></div>
+                <div class="setup-step"><div class="step-num">2</div><div class="step-text"><strong>Rightmove Agent Hub</strong> → top-right menu → <strong>Account Settings</strong> → <strong>Branch details</strong> → scroll to <em>"Branch enquiry email"</em> → paste your RentSift address → Save</div></div>
+                <div class="setup-step"><div class="step-num">3</div><div class="step-text"><strong>Update your Rightmove descriptions:</strong> Add a note to your property listings such as:<br><em>"To book a viewing quickly, please use the secure RentSift link provided in our automated email response."</em><br>This helps train applicants to use the pre-qualification form instantly.</div></div>
+                <div class="setup-step"><div class="step-num">4</div><div class="step-text">Every new Rightmove enquiry is automatically screened — results appear in your <strong>Lead Dashboard</strong> within seconds.</div></div>
               </div>
             </div>
             <div class="setup-card"><h4>How it works</h4><p>When a prospective tenant sends an enquiry through Rightmove, RentSift receives it, extracts the applicant's details, and runs an AI screening check using UK letting standards — income thresholds, document readiness, employment type, and urgency signals. You receive a scored result instantly.</p></div>
@@ -508,7 +512,8 @@ const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const PLAN_LIMITS = { starter: 50, professional: 150, agency: 450 };
 
-let allLeads = [], currentFilter = 'all', currentUser = null;
+let allLeads = [], currentFilter = 'all', currentSearch = '', currentUser = null;
+let sessionTimeoutTracker; // Madde 17
 
 function openDrawer() {
   document.getElementById('mobile-sidebar').classList.add('open');
@@ -528,6 +533,17 @@ function showPanel(name) {
   });
 }
 
+// Madde 17: Güvenlik için 30 dakika inaktiflik sonrası otomatik çıkış
+function resetSessionTimeout() {
+  clearTimeout(sessionTimeoutTracker);
+  if (currentUser) {
+    sessionTimeoutTracker = setTimeout(() => {
+      handleLogout();
+      alert("Your session has expired due to 30 minutes of inactivity. Please sign in again.");
+    }, 30 * 60 * 1000); // 30 mins
+  }
+}
+
 async function init() {
   const saved = localStorage.getItem('theme');
   if (saved) {
@@ -536,11 +552,15 @@ async function init() {
     document.getElementById('mob-theme-btn').textContent = saved === 'dark' ? '☀️ Theme' : '🌙 Theme';
   }
 
+  // Madde 17 Events
+  ['mousemove', 'keydown', 'scroll', 'click'].forEach(e => window.addEventListener(e, resetSessionTimeout));
+
   const hash = window.location.hash;
   if (hash.includes('type=recovery') || hash.includes('type=signup')) {
     const { data } = await sb.auth.getSession();
     if (data?.session) {
       currentUser = data.session.user;
+      resetSessionTimeout();
       window.history.replaceState({}, document.title, window.location.pathname);
       document.getElementById('app-loading').style.display = 'none';
       document.getElementById('auth-view').style.display = 'flex';
@@ -553,6 +573,7 @@ async function init() {
     const { data } = await sb.auth.getSession();
     if (data?.session) {
       currentUser = data.session.user;
+      resetSessionTimeout();
       window.history.replaceState({}, document.title, window.location.pathname);
       await showDashboard();
       document.getElementById('app-loading').style.display = 'none';
@@ -563,11 +584,19 @@ async function init() {
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
     currentUser = session.user;
+    resetSessionTimeout();
     await showDashboard();
   } else {
     showAuth();
   }
   document.getElementById('app-loading').style.display = 'none';
+
+  // Madde 13: Arkada her 30 saniyede bir yeni kayıtları kontrol et (Kullanıcı giriş yaptıysa)
+  setInterval(() => {
+    if (currentUser) {
+      loadLeads();
+    }
+  }, 30000);
 }
 
 function showAuth() {
@@ -590,6 +619,7 @@ async function handleLogin() {
     err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Sign in to dashboard'; return;
   }
   currentUser = data.user;
+  resetSessionTimeout();
   await showDashboard();
 }
 
@@ -621,6 +651,7 @@ async function handleResetPassword() {
   const { data, error } = await sb.auth.updateUser({ password });
   if (error) { err.textContent = error.message; err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Set password & sign in'; return; }
   currentUser = data.user;
+  resetSessionTimeout();
   window.history.replaceState({}, document.title, window.location.pathname);
   await showDashboard();
 }
@@ -682,6 +713,7 @@ async function signOutAndReturn() {
 async function handleLogout() {
   await sb.auth.signOut();
   currentUser = null; allLeads = [];
+  clearTimeout(sessionTimeoutTracker);
   document.getElementById('login-password').value = '';
   document.getElementById('login-error').style.display = 'none';
   closeDrawer();
@@ -698,7 +730,6 @@ async function loadLeads() {
   document.getElementById('nav-badge').textContent = suitableCount;
   document.getElementById('mob-nav-badge').textContent = suitableCount;
 
-  // Refresh usage from DB
   const { data: profile } = await sb.from('profiles').select('plan, monthly_lead_count, lead_count_reset_at').eq('id', currentUser.id).single();
   if (profile) updateUsageBars(profile);
 }
@@ -726,18 +757,29 @@ function updateUsageBars(profile) {
   if (nudge) nudge.style.display = pct >= 80 ? 'block' : 'none';
 }
 
+// Madde 10: Arama fonksiyonu
+function handleSearch() {
+  currentSearch = document.getElementById('search-input').value.toLowerCase();
+  renderLeads();
+}
+
 function filterLeads(filter, btn) {
   currentFilter = filter;
   document.querySelectorAll('.filter-btn').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
   renderLeads();
 }
 
 function renderLeads() {
-  const leads = currentFilter === 'all' ? allLeads : allLeads.filter(l => l.status === currentFilter);
+  // Hem duruma hem aramaya göre filtrele
+  let leads = currentFilter === 'all' ? allLeads : allLeads.filter(l => l.status === currentFilter);
+  if (currentSearch) {
+    leads = leads.filter(l => (l.name || '').toLowerCase().includes(currentSearch) || (l.email || '').toLowerCase().includes(currentSearch));
+  }
+  
   const tbody = document.getElementById('leads-tbody');
   if (!leads.length) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads yet</div><div class="empty-sub">Set up your Rightmove integration to start receiving screened applicants</div></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads found</div><div class="empty-sub">Adjust your search or filter criteria</div></div></td></tr>`;
     return;
   }
   tbody.innerHTML = leads.map(l => {
@@ -758,8 +800,21 @@ function openModal(id) {
   if (!l) return;
   const sc = (l.score||0)>=75?'sc-circle-q':(l.score||0)>=40?'sc-circle-p':'sc-circle-r';
   const st = l.status==='Suitable'?'st-q':l.status==='Further assessment required'?'st-p':'st-r';
+  
+  // Madde 15: Reply Button Mailto Linki
+  const mailtoLink = `mailto:${esc(l.email)}?subject=Re: Your enquiry for ${esc(l.property_address || 'our property')}`;
+
   document.getElementById('modal-content').innerHTML = `
-    <div class="modal-header"><div><div class="modal-title">${esc(l.name)}</div><div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(l.email)}</div></div><button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button></div>
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">${esc(l.name)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(l.email)}</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <a href="${mailtoLink}" class="copy-btn" style="text-decoration:none;background:var(--bg2);color:var(--text);border:1px solid var(--border)">↩ Reply to Applicant</a>
+        <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+      </div>
+    </div>
     <div class="score-banner"><div class="score-circle ${sc}">${l.score||'—'}</div><div class="score-info"><h4>AI Screening Score</h4><span class="status-chip ${st}" style="margin-top:4px;display:inline-flex">${l.status||'—'}</span></div></div>
     <div class="modal-section"><div class="modal-section-label">Applicant Details</div><div class="detail-grid">
       <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${esc(l.email)}</div></div>
@@ -774,8 +829,29 @@ function openModal(id) {
     </div></div>
     ${l.message?`<div class="modal-section"><div class="modal-section-label">Applicant Message</div><div class="message-box">"${esc(l.message)}"</div></div>`:''}
     ${l.analysis?`<div class="modal-section"><div class="modal-section-label">AI Analysis</div><div class="ai-box"><div class="ai-box-label">✦ RentSift AI</div><div class="ai-box-text">${esc(l.analysis)}</div></div></div>`:''}
-    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:8px"><button class="delete-btn" onclick="deleteApplicant(${l.id},'${esc(l.name)}')">🗑 Delete applicant data (GDPR)</button></div>`;
+    
+    <div class="modal-section">
+      <div class="modal-section-label">Agent Notes (Private)</div>
+      <textarea id="agent-note-${l.id}" style="width:100%;height:80px;padding:12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:none;outline:none" placeholder="Add private notes for your team here...">${esc(l.note || '') === '—' ? '' : esc(l.note || '')}</textarea>
+      <button class="filter-btn" style="margin-top:8px" onclick="saveNote(${l.id})">💾 Save Note</button>
+    </div>
+
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px"><button class="delete-btn" onclick="deleteApplicant(${l.id},'${esc(l.name)}')">🗑 Delete applicant data (GDPR)</button></div>`;
   document.getElementById('modal').classList.add('open');
+}
+
+// Madde 12: Supabase Note Güncelleme Fonksiyonu
+async function saveNote(id) {
+  const noteText = document.getElementById(`agent-note-${id}`).value;
+  const { error } = await sb.from('leads').update({ note: noteText }).eq('id', id);
+  if (error) {
+    showToast('⚠ Failed to save note: ' + error.message);
+  } else {
+    // allLeads state'ini lokasyon bazlı güncelle
+    const index = allLeads.findIndex(x => String(x.id) === String(id));
+    if (index > -1) allLeads[index].note = noteText;
+    showToast('✓ Note saved successfully');
+  }
 }
 
 function closeModal(e) {
@@ -816,6 +892,52 @@ function copyApplyLink() {
   const link = document.getElementById('apply-link-display').textContent;
   if (link === 'Loading...') return;
   navigator.clipboard.writeText(link).then(() => showToast('✓ Apply link copied'));
+}
+
+// Madde 11: Export to CSV İşlevi
+function exportCSV() {
+  if (!allLeads || allLeads.length === 0) {
+    showToast('⚠ No leads to export.');
+    return;
+  }
+  
+  // O anki filtreye göre datayı al
+  let leadsToExport = currentFilter === 'all' ? allLeads : allLeads.filter(l => l.status === currentFilter);
+  if (currentSearch) {
+    leadsToExport = leadsToExport.filter(l => (l.name || '').toLowerCase().includes(currentSearch) || (l.email || '').toLowerCase().includes(currentSearch));
+  }
+
+  if (!leadsToExport.length) {
+    showToast('⚠ No leads match your current filter/search.');
+    return;
+  }
+
+  const headers = ['Name', 'Email', 'Phone', 'Location', 'Budget', 'Income', 'Employment', 'Score', 'Status', 'Message', 'AI Analysis', 'Agent Note', 'Date Received'];
+  
+  const rows = leadsToExport.map(l => [
+    `"${(l.name||'').replace(/"/g, '""')}"`,
+    `"${(l.email||'').replace(/"/g, '""')}"`,
+    `"${(l.phone||'').replace(/"/g, '""')}"`,
+    `"${(l.region||'').replace(/"/g, '""')}"`,
+    `"${l.budget||0}"`,
+    `"${l.annual_income||0}"`,
+    `"${(l.employment||'').replace(/"/g, '""')}"`,
+    `"${l.score||0}"`,
+    `"${(l.status||'').replace(/"/g, '""')}"`,
+    `"${(l.message||'').replace(/"/g, '""')}"`,
+    `"${(l.analysis||'').replace(/"/g, '""')}"`,
+    `"${(l.note||'').replace(/"/g, '""')}"`,
+    `"${l.created_at ? new Date(l.created_at).toISOString().split('T')[0] : ''}"`
+  ]);
+
+  const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join("\n");
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `RentSift_Leads_${new Date().toISOString().split('T')[0]}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 function showToast(msg) {
