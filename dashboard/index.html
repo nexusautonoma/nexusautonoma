@@ -126,7 +126,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .panel-header-left h3{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:700;color:var(--text)}
 .panel-header-left p{font-size:12px;color:var(--muted);margin-top:1px}
 .filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-/* Madde 10: Search input */
 .search-input{padding:7px 12px;border-radius:6px;font-size:13px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;width:220px;outline:none;transition:border-color .2s}
 .search-input:focus{border-color:var(--gold)}
 .filter-btn{padding:7px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:none;color:var(--muted);transition:all .15s;font-family:'DM Sans',sans-serif;display:inline-flex;align-items:center;gap:4px}
@@ -479,9 +478,24 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
           <div class="account-page">
             <div class="account-header"><h2>My Account</h2><p>Your subscription details and account information.</p></div>
             <div class="account-grid">
-              <div class="account-card"><h4>Subscription</h4><div class="plan-badge-card"><span class="plan-badge-name" id="account-plan-name">—</span><span class="plan-badge-status">Active</span></div><div class="account-row"><span class="account-row-label">Billing</span><span class="account-row-value">Monthly</span></div><div class="account-row"><span class="account-row-label">Manage</span><span class="account-row-value"><a href="https://customer-portal.paddle.com/cpl_01ktkezar72n6j0yd5m7dqs3sz" target="_blank" style="color:var(--gold)">Manage subscription →</a></span></div></div>
-              <div class="account-card"><h4>Account Details</h4><div class="account-row"><span class="account-row-label">Email</span><span class="account-row-value" id="account-email">—</span></div><div class="account-row"><span class="account-row-label">Status</span><span class="account-row-value" style="color:var(--green)">Active</span></div><div class="account-row"><span class="account-row-label">Data</span><span class="account-row-value">UK GDPR compliant</span></div><div class="account-row"><span class="account-row-label">Support</span><span class="account-row-value"><a href="mailto:hello@rentsift.co.uk" style="color:var(--gold)">hello@rentsift.co.uk</a></span></div></div>
-              <div class="account-card" style="grid-column:1/-1"><h4>Usage This Month</h4>
+              <div class="account-card">
+                <h4>Subscription</h4>
+                <div class="plan-badge-card">
+                  <span class="plan-badge-name" id="account-plan-name">—</span>
+                  <span class="plan-badge-status" id="account-plan-status">Active</span>
+                </div>
+                <div class="account-row"><span class="account-row-label">Billing</span><span class="account-row-value">Monthly</span></div>
+                <div class="account-row"><span class="account-row-label">Manage</span><span class="account-row-value"><a href="https://customer-portal.paddle.com/cpl_01ktkezar72n6j0yd5m7dqs3sz" target="_blank" style="color:var(--gold)">Manage subscription →</a></span></div>
+              </div>
+              <div class="account-card">
+                <h4>Account Details</h4>
+                <div class="account-row"><span class="account-row-label">Email</span><span class="account-row-value" id="account-email">—</span></div>
+                <div class="account-row"><span class="account-row-label">Status</span><span class="account-row-value" id="account-sub-status" style="font-weight:600; color:var(--green)">Active</span></div>
+                <div class="account-row"><span class="account-row-label">Data</span><span class="account-row-value">UK GDPR compliant</span></div>
+                <div class="account-row"><span class="account-row-label">Support</span><span class="account-row-value"><a href="mailto:hello@rentsift.co.uk" style="color:var(--gold)">hello@rentsift.co.uk</a></span></div>
+              </div>
+              <div class="account-card" style="grid-column:1/-1">
+                <h4>Usage This Month</h4>
                 <div class="usage-section">
                   <div class="usage-item">
                     <div class="usage-header"><span class="usage-label">Applicants Screened</span><span class="usage-count" id="usage-count-text">— / —</span></div>
@@ -510,10 +524,11 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const PLAN_LIMITS = { starter: 50, professional: 150, agency: 450 };
+// 🔥 GÜNCELLENDİ: Limitlere "free_trial: 30" eklendi.
+const PLAN_LIMITS = { starter: 50, professional: 150, agency: 450, free_trial: 30 };
 
 let allLeads = [], currentFilter = 'all', currentSearch = '', currentUser = null;
-let sessionTimeoutTracker; // Madde 17
+let sessionTimeoutTracker; 
 
 function openDrawer() {
   document.getElementById('mobile-sidebar').classList.add('open');
@@ -533,7 +548,6 @@ function showPanel(name) {
   });
 }
 
-// Madde 17: Güvenlik için 30 dakika inaktiflik sonrası otomatik çıkış
 function resetSessionTimeout() {
   clearTimeout(sessionTimeoutTracker);
   if (currentUser) {
@@ -552,7 +566,6 @@ async function init() {
     document.getElementById('mob-theme-btn').textContent = saved === 'dark' ? '☀️ Theme' : '🌙 Theme';
   }
 
-  // Madde 17 Events
   ['mousemove', 'keydown', 'scroll', 'click'].forEach(e => window.addEventListener(e, resetSessionTimeout));
 
   const hash = window.location.hash;
@@ -591,11 +604,8 @@ async function init() {
   }
   document.getElementById('app-loading').style.display = 'none';
 
-  // Madde 13: Arkada her 30 saniyede bir yeni kayıtları kontrol et (Kullanıcı giriş yaptıysa)
   setInterval(() => {
-    if (currentUser) {
-      loadLeads();
-    }
+    if (currentUser) loadLeads();
   }, 30000);
 }
 
@@ -666,7 +676,8 @@ async function showDashboard() {
   document.getElementById('mob-user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
 
-  const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at').eq('id', currentUser.id).single();
+  // 🔥 GÜNCELLENDİ: 'subscription_status' artık veri tabanından çekiliyor.
+  const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status').eq('id', currentUser.id).single();
 
   if (!profile?.is_active) {
     document.getElementById('auth-view').style.display = 'none';
@@ -693,13 +704,48 @@ async function showDashboard() {
 
   const token = profile?.inbox_token || '';
   const plan = profile?.plan || 'starter';
-  const planLabel = plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
+  const subStatus = profile?.subscription_status || 'active';
+  
+  // Plan isimlendirme (free_trial kontrolü)
+  const planLabel = plan === 'free_trial' ? '14-Day Free Trial' : plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
+  const statusLabel = subStatus.charAt(0).toUpperCase() + subStatus.slice(1);
+
+  // Status Renklendirme Mantığı
+  let statusColor = 'var(--green)';
+  let statusBg = 'var(--green-pale)';
+  let statusBorder = 'var(--green-border)';
+  
+  if (subStatus === 'trialing') {
+    statusColor = 'var(--amber)';
+    statusBg = 'var(--amber-pale)';
+    statusBorder = 'var(--amber-border)';
+  } else if (subStatus === 'past_due' || subStatus === 'cancelled') {
+    statusColor = 'var(--red)';
+    statusBg = 'var(--red-pale)';
+    statusBorder = 'var(--red-border)';
+  }
 
   document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
   document.getElementById('apply-link-display').textContent = `https://rentsift.co.uk/apply?agent=${currentUser.id}`;
   document.getElementById('user-plan-display').textContent = planLabel;
   document.getElementById('mob-user-plan-display').textContent = planLabel;
+  
+  // "My Account" kartı verilerinin dinamik işlenmesi
   document.getElementById('account-plan-name').textContent = planLabel;
+  
+  const badge = document.getElementById('account-plan-status');
+  if (badge) {
+    badge.textContent = statusLabel;
+    badge.style.color = statusColor;
+    badge.style.backgroundColor = statusBg;
+    badge.style.borderColor = statusBorder;
+  }
+  
+  const rowStatus = document.getElementById('account-sub-status');
+  if (rowStatus) {
+    rowStatus.textContent = statusLabel;
+    rowStatus.style.color = statusColor;
+  }
 
   await loadLeads();
   updateUsageBars(profile);
@@ -730,7 +776,7 @@ async function loadLeads() {
   document.getElementById('nav-badge').textContent = suitableCount;
   document.getElementById('mob-nav-badge').textContent = suitableCount;
 
-  const { data: profile } = await sb.from('profiles').select('plan, monthly_lead_count, lead_count_reset_at').eq('id', currentUser.id).single();
+  const { data: profile } = await sb.from('profiles').select('plan, monthly_lead_count, lead_count_reset_at, subscription_status').eq('id', currentUser.id).single();
   if (profile) updateUsageBars(profile);
 }
 
@@ -744,7 +790,13 @@ function updateStats() {
 function updateUsageBars(profile) {
   if (!profile) return;
   const plan = (profile.plan || 'starter').toLowerCase();
-  const limit = PLAN_LIMITS[plan] || 50;
+  
+  // 🔥 GÜNCELLENDİ: Limit hesaplama mantığı. Eğer müşteri 'trialing' statüsündeyse limiti 30'a sabitle
+  let limit = PLAN_LIMITS[plan] || 50;
+  if (profile.subscription_status === 'trialing') {
+    limit = 30;
+  }
+
   const used = profile.monthly_lead_count || 0;
   const pct = Math.min((used / limit) * 100, 100);
 
@@ -757,7 +809,6 @@ function updateUsageBars(profile) {
   if (nudge) nudge.style.display = pct >= 80 ? 'block' : 'none';
 }
 
-// Madde 10: Arama fonksiyonu
 function handleSearch() {
   currentSearch = document.getElementById('search-input').value.toLowerCase();
   renderLeads();
@@ -771,7 +822,6 @@ function filterLeads(filter, btn) {
 }
 
 function renderLeads() {
-  // Hem duruma hem aramaya göre filtrele
   let leads = currentFilter === 'all' ? allLeads : allLeads.filter(l => l.status === currentFilter);
   if (currentSearch) {
     leads = leads.filter(l => (l.name || '').toLowerCase().includes(currentSearch) || (l.email || '').toLowerCase().includes(currentSearch));
@@ -801,7 +851,6 @@ function openModal(id) {
   const sc = (l.score||0)>=75?'sc-circle-q':(l.score||0)>=40?'sc-circle-p':'sc-circle-r';
   const st = l.status==='Suitable'?'st-q':l.status==='Further assessment required'?'st-p':'st-r';
   
-  // Madde 15: Reply Button Mailto Linki
   const mailtoLink = `mailto:${esc(l.email)}?subject=Re: Your enquiry for ${esc(l.property_address || 'our property')}`;
 
   document.getElementById('modal-content').innerHTML = `
@@ -840,14 +889,12 @@ function openModal(id) {
   document.getElementById('modal').classList.add('open');
 }
 
-// Madde 12: Supabase Note Güncelleme Fonksiyonu
 async function saveNote(id) {
   const noteText = document.getElementById(`agent-note-${id}`).value;
   const { error } = await sb.from('leads').update({ note: noteText }).eq('id', id);
   if (error) {
     showToast('⚠ Failed to save note: ' + error.message);
   } else {
-    // allLeads state'ini lokasyon bazlı güncelle
     const index = allLeads.findIndex(x => String(x.id) === String(id));
     if (index > -1) allLeads[index].note = noteText;
     showToast('✓ Note saved successfully');
@@ -894,14 +941,12 @@ function copyApplyLink() {
   navigator.clipboard.writeText(link).then(() => showToast('✓ Apply link copied'));
 }
 
-// Madde 11: Export to CSV İşlevi
 function exportCSV() {
   if (!allLeads || allLeads.length === 0) {
     showToast('⚠ No leads to export.');
     return;
   }
   
-  // O anki filtreye göre datayı al
   let leadsToExport = currentFilter === 'all' ? allLeads : allLeads.filter(l => l.status === currentFilter);
   if (currentSearch) {
     leadsToExport = leadsToExport.filter(l => (l.name || '').toLowerCase().includes(currentSearch) || (l.email || '').toLowerCase().includes(currentSearch));
