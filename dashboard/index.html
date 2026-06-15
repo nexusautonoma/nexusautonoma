@@ -105,7 +105,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);fon
 .topbar-right{display:flex;align-items:center;gap:10px}
 .topbar-btn{background:var(--surface2);border:1px solid var(--border);width:34px;height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .2s;color:var(--text2)}
 .topbar-btn:hover{border-color:var(--gold);color:var(--gold)}
-.content{flex:1;overflow-y:auto;padding:28px}
+.content{flex:1;overflow-y:auto;padding:28px;position:relative;}
 
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 22px;transition:all .2s}
@@ -736,6 +736,10 @@ async function showDashboard() {
 
   if (subStatus === 'past_due') {
     showPastDueWarning();
+  } else {
+    // Dacă active veya trialing ise, önceden eklenmiş uyarı varsa kaldır
+    const warning = document.getElementById('past-due-warning');
+    if (warning) warning.remove();
   }
 
   document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
