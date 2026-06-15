@@ -524,7 +524,6 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// 🔥 GÜNCELLENDİ: Limitlere "free_trial: 30" eklendi.
 const PLAN_LIMITS = { starter: 50, professional: 150, agency: 450, free_trial: 30 };
 
 let allLeads = [], currentFilter = 'all', currentSearch = '', currentUser = null;
@@ -554,7 +553,7 @@ function resetSessionTimeout() {
     sessionTimeoutTracker = setTimeout(() => {
       handleLogout();
       alert("Your session has expired due to 30 minutes of inactivity. Please sign in again.");
-    }, 30 * 60 * 1000); // 30 mins
+    }, 30 * 60 * 1000); 
   }
 }
 
@@ -666,6 +665,19 @@ async function handleResetPassword() {
   await showDashboard();
 }
 
+function showPastDueWarning() {
+  const existing = document.getElementById('past-due-warning');
+  if (existing) return;
+  const warningDiv = document.createElement('div');
+  warningDiv.id = 'past-due-warning';
+  warningDiv.style = "background:#fef2f2; border:1px solid #fecaca; color:#dc2626; padding:16px; text-align:center; font-size:14px; font-weight:600; margin-bottom:24px; border-radius:8px;";
+  warningDiv.innerHTML = `
+    ⚠️ Your last payment attempt failed. To keep your RentSift account active and avoid service interruption, please 
+    <a href="https://customer-portal.paddle.com/cpl_01ktkezar72n6j0yd5m7dqs3sz" target="_blank" style="color:#dc2626; text-decoration:underline; font-weight:700;">update your payment details here</a>.
+  `;
+  document.querySelector('.content').prepend(warningDiv);
+}
+
 async function showDashboard() {
   document.getElementById('auth-view').style.display = 'none';
   document.getElementById('dash-view').style.display = 'block';
@@ -676,10 +688,9 @@ async function showDashboard() {
   document.getElementById('mob-user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
 
-  // 🔥 GÜNCELLENDİ: 'subscription_status' artık veri tabanından çekiliyor.
   const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status').eq('id', currentUser.id).single();
 
-  if (!profile?.is_active) {
+  if (!profile?.is_active && profile?.subscription_status !== 'past_due') {
     document.getElementById('auth-view').style.display = 'none';
     document.getElementById('dash-view').style.display = 'none';
     document.getElementById('app-loading').style.display = 'none';
@@ -706,11 +717,9 @@ async function showDashboard() {
   const plan = profile?.plan || 'starter';
   const subStatus = profile?.subscription_status || 'active';
   
-  // Plan isimlendirme (free_trial kontrolü)
   const planLabel = plan === 'free_trial' ? '14-Day Free Trial' : plan.charAt(0).toUpperCase() + plan.slice(1) + ' Plan';
-  const statusLabel = subStatus.charAt(0).toUpperCase() + subStatus.slice(1);
+  const statusLabel = subStatus.charAt(0).toUpperCase() + subStatus.slice(1).replace('_', ' ');
 
-  // Status Renklendirme Mantığı
   let statusColor = 'var(--green)';
   let statusBg = 'var(--green-pale)';
   let statusBorder = 'var(--green-border)';
@@ -725,12 +734,15 @@ async function showDashboard() {
     statusBorder = 'var(--red-border)';
   }
 
+  if (subStatus === 'past_due') {
+    showPastDueWarning();
+  }
+
   document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
   document.getElementById('apply-link-display').textContent = `https://rentsift.co.uk/apply?agent=${currentUser.id}`;
   document.getElementById('user-plan-display').textContent = planLabel;
   document.getElementById('mob-user-plan-display').textContent = planLabel;
   
-  // "My Account" kartı verilerinin dinamik işlenmesi
   document.getElementById('account-plan-name').textContent = planLabel;
   
   const badge = document.getElementById('account-plan-status');
@@ -791,7 +803,6 @@ function updateUsageBars(profile) {
   if (!profile) return;
   const plan = (profile.plan || 'starter').toLowerCase();
   
-  // 🔥 GÜNCELLENDİ: Limit hesaplama mantığı. Eğer müşteri 'trialing' statüsündeyse limiti 30'a sabitle
   let limit = PLAN_LIMITS[plan] || 50;
   if (profile.subscription_status === 'trialing') {
     limit = 30;
