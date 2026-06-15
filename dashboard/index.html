@@ -358,6 +358,15 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 </div>
 
 <div id="dash-view">
+  <div id="dash-lockout" style="display:none; position:absolute; inset:0; background:rgba(250,250,247,0.95); z-index:100; align-items:center; justify-content:center; backdrop-filter:blur(5px);">
+    <div style="background:#fff; border:1px solid #e8e6df; border-radius:12px; padding:40px; text-align:center; max-width:440px; box-shadow:0 12px 40px rgba(0,0,0,0.1);">
+      <div style="font-size:36px; margin-bottom:16px;">⏱️</div>
+      <h2 style="font-family:'Cormorant Garamond',serif; font-size:26px; font-weight:700; color:#1a1a14; margin-bottom:12px;">Trial limit reached</h2>
+      <p id="lockout-message" style="font-size:14px; color:#8a8a7a; line-height:1.6; margin-bottom:28px;">Your 14-day free trial limit has been reached. Please upgrade to continue screening applicants.</p>
+      <a href="https://rentsift.co.uk/#pricing" style="display:inline-block; background:#0f1f3d; color:white; padding:12px 28px; border-radius:8px; text-decoration:none; font-size:14px; font-weight:600;">Upgrade your plan →</a>
+    </div>
+  </div>
+
   <div class="dash-layout">
     <div class="sidebar">
       <div class="sidebar-header">
@@ -678,6 +687,20 @@ function showPastDueWarning() {
   document.querySelector('.content').prepend(warningDiv);
 }
 
+// 🔥 YENİ KURAL FONKSİYONU: Kilitleme Ekranını Göster
+function showTrialLockout(reason) {
+  const lockoutScreen = document.getElementById('dash-lockout');
+  const messageEl = document.getElementById('lockout-message');
+  
+  if (reason === '30_leads') {
+    messageEl.textContent = "You've reached the 30-lead limit for your free trial. Please upgrade your plan to continue screening applicants.";
+  } else if (reason === '4th_property') {
+    messageEl.textContent = "You've reached the 3-property limit for your free trial. Please upgrade your plan to connect more properties.";
+  }
+  
+  lockoutScreen.style.display = 'flex';
+}
+
 async function showDashboard() {
   document.getElementById('auth-view').style.display = 'none';
   document.getElementById('dash-view').style.display = 'block';
@@ -734,12 +757,37 @@ async function showDashboard() {
     statusBorder = 'var(--red-border)';
   }
 
+  // Kırmızı Alarm
   if (subStatus === 'past_due') {
     showPastDueWarning();
   } else {
-    // Dacă active veya trialing ise, önceden eklenmiş uyarı varsa kaldır
     const warning = document.getElementById('past-due-warning');
     if (warning) warning.remove();
+  }
+
+  // 🔥 YENİ: KİLİT KONTROLLERİ (Trial Kullanıcılar İçin)
+  if (subStatus === 'trialing') {
+    const used = profile?.monthly_lead_count || 0;
+    
+    // 1. KURAL: 30 Sorgu Limiti Doldu Mu?
+    if (used >= 30) {
+      showTrialLockout('30_leads');
+    } else {
+      // 2. KURAL: 4. İlan Bağlanmaya Çalışıldı Mı?
+      // parse-email fonksiyonu hata verdiğinde log atıyor. Kullanıcı dashboard'a girdiğinde veya yenilendiğinde
+      // 429 hatası almış mı diye error_logs tablosunu kontrol edelim (Son 24 saat içinde).
+      const { data: errors } = await sb
+        .from('error_logs')
+        .select('*')
+        .eq('function', 'parse-email')
+        .ilike('error_msg', '%Trial property limit reached%')
+        .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+        .limit(1);
+
+      if (errors && errors.length > 0) {
+        showTrialLockout('4th_property');
+      }
+    }
   }
 
   document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
