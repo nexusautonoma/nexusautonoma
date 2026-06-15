@@ -213,6 +213,10 @@ input.error,select.error{border-color:#dc2626}
 <script>
 const params = new URLSearchParams(window.location.search);
 const agentId = params.get('agent') || '';
+
+// 🔥 GÜNCELLENDİ: Form artık URL'den 'lead' kimliğini de yakalıyor
+const leadId = params.get('lead') || ''; 
+
 const radioValues = {};
 
 function selectRadio(name, value, el) {
@@ -314,7 +318,9 @@ async function submitForm() {
     upfront: radioValues['upfront'] || '',
     guarantor: radioValues['guarantor'] || '',
     message: document.getElementById('message').value.trim(),
-    agent_id: agentId
+    agent_id: agentId,
+    // 🔥 GÜNCELLENDİ: Yakalanan leadId backend'e fırlatılıyor
+    lead_id: leadId 
   };
 
   try {
@@ -327,7 +333,6 @@ async function submitForm() {
       body: JSON.stringify(payload)
     });
 
-    // Madde 4: Sunucu hatasını yakalıyoruz (örneğin plan limiti dolduğunda veya ajan hesabı pasif olduğunda)
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.error || `Server responded with status ${response.status}`);
@@ -343,7 +348,6 @@ async function submitForm() {
     btn.disabled = false;
     btn.textContent = 'Submit enquiry →';
     
-    // Kullanıcıya açıkça gösterilen hata mesajı
     alert(`Submission Failed: ${e.message || 'Something went wrong.'} Please try again or contact hello@rentsift.co.uk`);
   }
 }
