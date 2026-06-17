@@ -8,6 +8,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+<script>
+  Paddle.Initialize({ token: "live_9007b9542bdc9791116e35db3b3" });
+</script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -224,6 +228,17 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 
 .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
 .toast.show{transform:translateY(0);opacity:1}
+
+/* YENİ EKLENEN: Top-up Buton Stilleri */
+.topup-btn-wrapper {
+  display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px;
+}
+.topup-btn {
+  background: var(--bg2); border: 1px solid var(--border); padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; color: var(--text); cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif; flex: 1; display: flex; justify-content: space-between; align-items: center; min-width: 140px;
+}
+.topup-btn:hover {
+  border-color: var(--gold); box-shadow: 0 4px 12px rgba(184,134,11,0.08); background: var(--surface);
+}
 
 @media(max-width:768px){
   .sidebar{display:none}
@@ -503,6 +518,7 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                 <div class="account-row"><span class="account-row-label">Data</span><span class="account-row-value">UK GDPR compliant</span></div>
                 <div class="account-row"><span class="account-row-label">Support</span><span class="account-row-value"><a href="mailto:hello@rentsift.co.uk" style="color:var(--gold)">hello@rentsift.co.uk</a></span></div>
               </div>
+              
               <div class="account-card" style="grid-column:1/-1">
                 <h4>Usage This Month</h4>
                 <div class="usage-section">
@@ -510,8 +526,27 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                     <div class="usage-header"><span class="usage-label">Applicants Screened</span><span class="usage-count" id="usage-count-text">— / —</span></div>
                     <div class="usage-bar-track"><div class="usage-bar-fill" id="usage-bar" style="width:0%"></div></div>
                   </div>
+                  
+                  <div class="usage-item" id="extra-credits-item" style="display:none; margin-top: 14px;">
+                    <div class="usage-header"><span class="usage-label" style="color: var(--gold);">Available Extra Credits</span><span class="usage-count" id="extra-credits-text" style="font-weight: 700; color: var(--gold);">0</span></div>
+                  </div>
                 </div>
                 <div class="upgrade-nudge" id="upgrade-nudge" style="display:none">Approaching your monthly limit. <a href="https://rentsift.co.uk/#pricing">Upgrade your plan →</a></div>
+                
+                <div style="margin-top: 32px; padding-top: 24px; border-top: 1px dashed var(--border);">
+                  <h5 style="font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Need more flexibility?</h5>
+                  <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Top-up your allowances instantly without upgrading your plan.</p>
+                  
+                  <div class="topup-btn-wrapper">
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_BURAYA_100_KREDI_ID_GELECEK',quantity:1}]})">
+                      <span>⚡ +100 Applicants</span> <span style="color: var(--gold);">£49</span>
+                    </button>
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_BURAYA_1_ILAN_ID_GELECEK',quantity:1}]})">
+                      <span>🏠 +1 Listing</span> <span style="color: var(--gold);">£9</span>
+                    </button>
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
@@ -687,7 +722,6 @@ function showPastDueWarning() {
   document.querySelector('.content').prepend(warningDiv);
 }
 
-// 🔥 YENİ KURAL FONKSİYONU: Kilitleme Ekranını Göster
 function showTrialLockout(reason) {
   const lockoutScreen = document.getElementById('dash-lockout');
   const messageEl = document.getElementById('lockout-message');
@@ -711,7 +745,8 @@ async function showDashboard() {
   document.getElementById('mob-user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
 
-  const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status').eq('id', currentUser.id).single();
+  // YENİ EKLENEN: Sorguya extra_applicant_credits eklendi
+  const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits').eq('id', currentUser.id).single();
 
   if (!profile?.is_active && profile?.subscription_status !== 'past_due') {
     document.getElementById('auth-view').style.display = 'none';
@@ -757,7 +792,6 @@ async function showDashboard() {
     statusBorder = 'var(--red-border)';
   }
 
-  // Kırmızı Alarm
   if (subStatus === 'past_due') {
     showPastDueWarning();
   } else {
@@ -765,17 +799,12 @@ async function showDashboard() {
     if (warning) warning.remove();
   }
 
-  // 🔥 YENİ: KİLİT KONTROLLERİ (Trial Kullanıcılar İçin)
   if (subStatus === 'trialing') {
     const used = profile?.monthly_lead_count || 0;
     
-    // 1. KURAL: 30 Sorgu Limiti Doldu Mu?
     if (used >= 30) {
       showTrialLockout('30_leads');
     } else {
-      // 2. KURAL: 4. İlan Bağlanmaya Çalışıldı Mı?
-      // parse-email fonksiyonu hata verdiğinde log atıyor. Kullanıcı dashboard'a girdiğinde veya yenilendiğinde
-      // 429 hatası almış mı diye error_logs tablosunu kontrol edelim (Son 24 saat içinde).
       const { data: errors } = await sb
         .from('error_logs')
         .select('*')
@@ -840,7 +869,8 @@ async function loadLeads() {
   document.getElementById('nav-badge').textContent = suitableCount;
   document.getElementById('mob-nav-badge').textContent = suitableCount;
 
-  const { data: profile } = await sb.from('profiles').select('plan, monthly_lead_count, lead_count_reset_at, subscription_status').eq('id', currentUser.id).single();
+  // YENİ EKLENEN: Sorguya extra_applicant_credits eklendi
+  const { data: profile } = await sb.from('profiles').select('plan, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits').eq('id', currentUser.id).single();
   if (profile) updateUsageBars(profile);
 }
 
@@ -861,6 +891,7 @@ function updateUsageBars(profile) {
   }
 
   const used = profile.monthly_lead_count || 0;
+  const extraCredits = profile.extra_applicant_credits || 0; // YENİ EKLENEN
   const pct = Math.min((used / limit) * 100, 100);
 
   const bar = document.getElementById('usage-bar');
@@ -870,6 +901,19 @@ function updateUsageBars(profile) {
   document.getElementById('usage-count-text').textContent = `${used} / ${limit}`;
   const nudge = document.getElementById('upgrade-nudge');
   if (nudge) nudge.style.display = pct >= 80 ? 'block' : 'none';
+
+  // YENİ EKLENEN: Ekstra Kredi UI Güncellemesi
+  const extraCreditsItem = document.getElementById('extra-credits-item');
+  if (extraCreditsItem) {
+    if (extraCredits > 0) {
+      document.getElementById('extra-credits-text').textContent = extraCredits;
+      extraCreditsItem.style.display = 'flex';
+      // Ekstra kredi varsa upgrade uyarısını gizleyelim
+      if (nudge) nudge.style.display = 'none'; 
+    } else {
+      extraCreditsItem.style.display = 'none';
+    }
+  }
 }
 
 function handleSearch() {
