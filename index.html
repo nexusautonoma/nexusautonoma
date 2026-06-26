@@ -147,6 +147,23 @@ h2{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,52px);font-we
 .stat-num span{color:var(--gold-light)}
 .stat-label{font-size:13px;color:rgba(255,255,255,0.55);letter-spacing:0.5px}
 
+/* Pricing Toggle */
+.pricing-toggle-wrap { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 24px; margin-bottom: 40px; }
+.toggle-label { font-size: 15px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 8px; }
+.save-badge { background: var(--green-pale, #ecfdf5); color: var(--green, #059669); border: 1px solid var(--green-border, #a7f3d0); font-size: 11px; padding: 2px 8px; border-radius: 100px; font-weight: 700; }
+.switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+.switch input { opacity: 0; width: 0; height: 0; }
+.slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border2); transition: .4s; }
+.slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; }
+input:checked + .slider { background-color: var(--navy); }
+input:checked + .slider:before { transform: translateX(22px); }
+.slider.round { border-radius: 34px; }
+.slider.round:before { border-radius: 50%; }
+.price-monthly { display: block !important; }
+.price-yearly { display: none !important; }
+body.yearly .price-monthly { display: none !important; }
+body.yearly .price-yearly { display: block !important; }
+
 /* Pricing */
 .pricing{padding:96px 5%;background:var(--bg)}
 .pricing-inner{max-width:1200px;margin:0 auto}
@@ -226,6 +243,25 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
 .footer-legal a{font-size:12px;color:rgba(255,255,255,0.35);text-decoration:none;cursor:pointer;transition:color .2s}
 .footer-legal a:hover{color:rgba(255,255,255,0.7)}
 
+/* Chatbot Styles */
+.chatbot-trigger { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; background: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; box-shadow: 0 4px 20px rgba(15,31,61,0.2); z-index: 900; transition: transform 0.2s; }
+.chatbot-trigger:hover { transform: translateY(-3px); background: var(--gold); }
+.chatbot-window { position: fixed; bottom: 90px; right: 24px; width: 340px; height: 480px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); z-index: 900; display: none; flex-direction: column; overflow: hidden; }
+.chatbot-window.open { display: flex; animation: slideUp 0.3s ease; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.chatbot-header { background: var(--navy); color: white; padding: 16px; display: flex; align-items: center; justify-content: space-between; }
+.chatbot-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; }
+.chatbot-close { background: none; border: none; color: white; font-size: 16px; cursor: pointer; }
+.chatbot-body { flex: 1; padding: 16px; overflow-y: auto; background: var(--bg); display: flex; flex-direction: column; gap: 12px; }
+.bot-msg { background: var(--surface); border: 1px solid var(--border); padding: 12px; border-radius: 12px; border-bottom-left-radius: 4px; font-size: 13px; color: var(--text); max-width: 85%; line-height: 1.5; }
+.user-msg { background: var(--gold-pale); border: 1px solid var(--gold-border); padding: 12px; border-radius: 12px; border-bottom-right-radius: 4px; font-size: 13px; color: var(--text); max-width: 85%; align-self: flex-end; line-height: 1.5; }
+.chatbot-faq { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.faq-btn { background: var(--surface); border: 1px solid var(--gold-border); color: var(--gold); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: left; transition: all 0.2s; }
+.faq-btn:hover { background: var(--gold); color: white; }
+.chatbot-input { padding: 16px; background: var(--surface); border-top: 1px solid var(--border); display: flex; gap: 8px; }
+.chatbot-input input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; outline: none; }
+.chatbot-input button { background: var(--navy); color: white; border: none; width: 40px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
 /* RESPONSIVE */
 @media(max-width:900px){
   .hero-inner,.footer-top{grid-template-columns:1fr}
@@ -237,6 +273,7 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
   .hero-proof{gap:16px}
   .footer-top{grid-template-columns:1fr 1fr}
   .contact-info{grid-template-columns:1fr}
+  .chatbot-window { width: 90%; right: 5%; bottom: 90px; }
 }
 </style>
 <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
@@ -248,7 +285,7 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
 
 <nav>
   <div class="nav-inner">
-    <a href="#" class="nav-brand" onclick="showMain();return false">
+    <a href="#" class="nav-brand" onclick="showMain();window.scrollTo({top:0,behavior:'smooth'});return false;">
       <div class="nav-logo-icon">
         <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="36" height="36" rx="8" fill="#0f1f3d"/>
@@ -430,32 +467,42 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
 
     <p class="section-sub" style="margin-top: 0;">No setup fees. No long-term contracts. Cancel at any time.</p>
     
+    <div class="pricing-toggle-wrap">
+      <span class="toggle-label" id="label-monthly">Monthly</span>
+      <label class="switch">
+        <input type="checkbox" id="pricing-toggle" onchange="togglePricingPeriod()">
+        <span class="slider round"></span>
+      </label>
+      <span class="toggle-label" id="label-yearly" style="color:var(--muted)">Yearly <span class="save-badge">Save 16%</span></span>
+    </div>
+    
     <div class="plans">
       <div class="plan">
         <p class="plan-name">Starter</p>
-        <p class="plan-price">£99<span>/month</span></p>
+        <p class="plan-price price-monthly">£99<span>/mo</span></p>
+        <p class="plan-price price-yearly">£990<span>/yr</span></p>
         <p class="plan-desc">For independent agents with a small portfolio.</p>
         <ul class="plan-features">
           <li><div class="pf-check">✓</div>Up to 10 active listings</li>
-          <li><div class="pf-check">✓</div>50 applicants/month</li>
-          <li><div class="pf-check">✓</div>AI analysis engine</li>
+          <li><div class="pf-check">✓</div>50 AI applicant analyses</li>
           <li><div class="pf-check">✓</div>Document checklist</li>
           <li><div class="pf-check">✓</div>Budget analysis</li>
           <li><div class="pf-check">✓</div>Email notifications</li>
           <li><div class="pf-check">✓</div>Applicant dashboard</li>
           <li><div class="pf-check">✓</div>Student applicant flag</li>
         </ul>
-        <a href="#" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01ktkmpr98kytsccfyee97e1mv',quantity:1}]});return false;" class="plan-btn plan-btn-outline">Get started →</a>
+        <a href="#" class="plan-btn plan-btn-outline price-monthly" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01ktkmpr98kytsccfyee97e1mv',quantity:1}]});return false;">Get started →</a>
+        <a href="#" class="plan-btn plan-btn-outline price-yearly" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kw01z0v6zcde26sdjgg9s0g1',quantity:1}]});return false;">Get started →</a>
       </div>
       <div class="plan featured">
         <div class="plan-badge">Most Popular</div>
         <p class="plan-name">Professional</p>
-        <p class="plan-price">£299<span>/month</span></p>
+        <p class="plan-price price-monthly">£299<span>/mo</span></p>
+        <p class="plan-price price-yearly">£2,990<span>/yr</span></p>
         <p class="plan-desc">For growing agencies managing multiple active lettings.</p>
         <ul class="plan-features">
-          <li><div class="pf-check">✓</div>Up to 30 active listings</li>
-          <li><div class="pf-check">✓</div>150 applicants/month</li>
-          <li><div class="pf-check">✓</div>AI analysis engine</li>
+          <li><div class="pf-check">✓</div>Up to 40 active listings</li>
+          <li><div class="pf-check">✓</div>200 AI applicant analyses</li>
           <li><div class="pf-check">✓</div>Document checklist</li>
           <li><div class="pf-check">✓</div>Budget analysis</li>
           <li><div class="pf-check">✓</div>Student applicant flag</li>
@@ -464,36 +511,45 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
           <li><div class="pf-check">✓</div>Priority support</li>
           <li><div class="pf-check">✓</div>Monthly analytics report</li>
         </ul>
-        <a href="#" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01ktkms28m7re9e3qzhyx574q9',quantity:1}]});return false;" class="plan-btn plan-btn-primary">Get started →</a>
+        <a href="#" class="plan-btn plan-btn-primary price-monthly" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01ktkms28m7re9e3qzhyx574q9',quantity:1}]});return false;">Get started →</a>
+        <a href="#" class="plan-btn plan-btn-primary price-yearly" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kw022h5xdscm33wbat4wr6yp',quantity:1}]});return false;">Get started →</a>
       </div>
       <div class="plan">
         <p class="plan-name">Agency</p>
-        <p class="plan-price">£499<span>/month</span></p>
+        <p class="plan-price price-monthly">£499<span>/mo</span></p>
+        <p class="plan-price price-yearly">£4,990<span>/yr</span></p>
         <p class="plan-desc">For established agencies with substantial lettings portfolios.</p>
         <ul class="plan-features">
-          <li><div class="pf-check">✓</div>Up to 90 active listings</li>
-          <li><div class="pf-check">✓</div>450 applicants/month</li>
-          <li><div class="pf-check">✓</div>AI analysis engine</li>
-          <li><div class="pf-check">✓</div>All analysis features</li>
-          <li><div class="pf-check">✓</div>5 team members</li>
-          <li><div class="pf-check">✓</div>Email notifications</li>
-          <li><div class="pf-check">✓</div>Dedicated support</li>
-          <li><div class="pf-check">✓</div>Monthly analytics report</li>
+          <li><div class="pf-check">✓</div>Up to 100 active listings</li>
+          <li><div class="pf-check">✓</div>500 AI applicant analyses</li>
+          <li><div class="pf-check">✓</div>Dedicated onboarding</li>
+          <li><div class="pf-check">✓</div>24/7 Priority support</li>
+          <li><div class="pf-check">✓</div>Quarterly portfolio review</li>
+          <li><div class="pf-check">✓</div>Risk trend reports</li>
           <li><div class="pf-check">✓</div>Custom filtering criteria</li>
+          <li><div class="pf-check">✓</div>Monthly analytics report</li>
         </ul>
-        <a href="#" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01ktkmye15r0ah55gp7v7r6ktj',quantity:1}]});return false;" class="plan-btn plan-btn-outline">Get started →</a>
+        <a href="#" class="plan-btn plan-btn-outline price-monthly" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01ktkmye15r0ah55gp7v7r6ktj',quantity:1}]});return false;">Get started →</a>
+        <a href="#" class="plan-btn plan-btn-outline price-yearly" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kw025taanbyrknzjmgss6qd7',quantity:1}]});return false;">Get started →</a>
       </div>
     </div>
 
     <div style="margin-top: 40px; background: var(--bg2); border: 1px dashed var(--border2); border-radius: 12px; padding: 32px 24px; text-align: center; transition: border-color .3s;">
       <h4 style="font-family: 'Cormorant Garamond', serif; font-size: 24px; color: var(--text); margin-bottom: 8px;">Need more flexibility?</h4>
-      <p style="font-size: 15px; color: var(--text2); margin-bottom: 24px;">Hit your limit early? Top-up your allowances instantly without upgrading your plan.</p>
+      <p style="font-size: 15px; color: var(--text2); margin-bottom: 24px;">Hit your limit early? Top-up your allowances instantly without upgrading your plan. Applicant Packs roll over forever.</p>
       
       <div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;">
-        <div style="background: var(--surface); padding: 14px 24px; border-radius: 8px; border: 1px solid var(--border); box-shadow: var(--shadow); font-size: 15px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 12px;">
+        <div style="background: var(--surface); padding: 14px 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: var(--shadow); font-size: 14px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 18px;">⚡</span> +100 Applicants <span style="color: var(--border2);">|</span> <span style="color: var(--gold); font-weight: 700;">£49</span>
         </div>
-        <div style="background: var(--surface); padding: 14px 24px; border-radius: 8px; border: 1px solid var(--border); box-shadow: var(--shadow); font-size: 15px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 12px;">
+        <div style="background: var(--surface); padding: 14px 20px; border-radius: 8px; border: 1px solid var(--gold-border); background: var(--gold-pale); box-shadow: var(--shadow); font-size: 14px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 10px; position: relative;">
+          <div style="position:absolute; top:-10px; right:-10px; background:var(--gold); color:white; font-size:10px; font-weight:700; padding:2px 6px; border-radius:4px; transform:rotate(5deg)">POPULAR</div>
+          <span style="font-size: 18px;">⚡</span> +250 Applicants <span style="color: var(--border2);">|</span> <span style="color: var(--gold); font-weight: 700;">£99</span>
+        </div>
+        <div style="background: var(--surface); padding: 14px 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: var(--shadow); font-size: 14px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 18px;">⚡</span> +500 Applicants <span style="color: var(--border2);">|</span> <span style="color: var(--gold); font-weight: 700;">£179</span>
+        </div>
+        <div style="background: var(--surface); padding: 14px 20px; border-radius: 8px; border: 1px solid var(--border); box-shadow: var(--shadow); font-size: 14px; font-weight: 500; color: var(--text); display: flex; align-items: center; gap: 10px;">
           <span style="font-size: 18px;">🏠</span> +1 Active Listing <span style="color: var(--border2);">|</span> <span style="color: var(--gold); font-weight: 700;">£9</span>
         </div>
       </div>
@@ -594,7 +650,7 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
       <li>Compliance with all applicable UK landlord and lettings legislation</li>
     </ul>
     <h2>4. Subscription and Payment</h2>
-    <p>Subscriptions are billed monthly in GBP. You may cancel at any time; cancellation takes effect at the end of the current billing period.</p>
+    <p>Subscriptions are billed monthly or annually in GBP. You may cancel at any time; cancellation takes effect at the end of the current billing period.</p>
     <h2>5. Acceptable Use</h2>
     <p>You agree not to use RentSift to discriminate unlawfully against any applicant on the basis of any protected characteristic under the Equality Act 2010.</p>
     <h2>6. Intellectual Property</h2>
@@ -635,7 +691,7 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <a href="#" class="footer-logo" onclick="showMain();return false">
+        <a href="#" class="footer-logo" onclick="showMain();window.scrollTo({top:0,behavior:'smooth'});return false;">
           <svg width="28" height="28" viewBox="0 0 36 36" fill="none"><rect width="36" height="36" rx="8" fill="rgba(255,255,255,0.1)"/><path d="M18 6C16.5 6 15.5 7 15.5 8.5C15.5 9.5 16 10.3 16.8 10.8L15 14H13C11.3 14 10 15.3 10 17V18H26V17C26 15.3 24.7 14 23 14H21L19.2 10.8C20 10.3 20.5 9.5 20.5 8.5C20.5 7 19.5 6 18 6Z" fill="#d4a017"/><rect x="9" y="19" width="18" height="3" rx="1.5" fill="#d4a017" opacity="0.8"/><rect x="11" y="23" width="14" height="7" rx="2" fill="#d4a017" opacity="0.6"/><rect x="9" y="28" width="18" height="2" rx="1" fill="#d4a017"/></svg>
           <span class="footer-logo-name">RentSift</span>
         </a>
@@ -671,7 +727,41 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
   </div>
 </footer>
 
+<!-- Support Chatbot -->
+<div class="chatbot-trigger" onclick="toggleChatbot()">💬</div>
+<div class="chatbot-window" id="chatbot-window">
+  <div class="chatbot-header">
+    <div class="chatbot-title">RentSift Support</div>
+    <button class="chatbot-close" onclick="toggleChatbot()">✕</button>
+  </div>
+  <div class="chatbot-body" id="chatbot-body">
+    <div class="bot-msg">Hi there! I'm RentSift's AI assistant. How can I help you today?</div>
+    <div class="chatbot-faq" id="chatbot-faq">
+      <button class="faq-btn" onclick="sendFaq('What is included in the free trial?')">What is included in the free trial?</button>
+      <button class="faq-btn" onclick="sendFaq('Do you integrate with Rightmove?')">Do you integrate with Rightmove?</button>
+      <button class="faq-btn" onclick="sendFaq('Can I change my plan later?')">Can I change my plan later?</button>
+    </div>
+  </div>
+  <div class="chatbot-input">
+    <input type="text" id="chat-input" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button onclick="sendChat()">➤</button>
+  </div>
+</div>
+
 <script>
+function togglePricingPeriod() {
+  const isYearly = document.getElementById('pricing-toggle').checked;
+  if(isYearly) {
+    document.body.classList.add('yearly');
+    document.getElementById('label-yearly').style.color = 'var(--text)';
+    document.getElementById('label-monthly').style.color = 'var(--muted)';
+  } else {
+    document.body.classList.remove('yearly');
+    document.getElementById('label-monthly').style.color = 'var(--text)';
+    document.getElementById('label-yearly').style.color = 'var(--muted)';
+  }
+}
+
 function showPage(page){
   document.getElementById('main-content').style.display='none';
   document.querySelectorAll('.legal-page,.contact-page').forEach(p=>p.classList.remove('active'));
@@ -704,6 +794,41 @@ window.addEventListener('load', function() {
   if(hash === '#terms') showPage('terms');
   if(hash === '#refund') showPage('refund');
 });
+
+// Chatbot functionality
+function toggleChatbot() {
+  document.getElementById('chatbot-window').classList.toggle('open');
+}
+function sendFaq(text) {
+  addMsg(text, 'user');
+  document.getElementById('chatbot-faq').style.display = 'none';
+  setTimeout(() => {
+    let reply = "Our team will reach out shortly!";
+    if(text.includes('free trial')) reply = "The 14-day trial gives you full access to RentSift with up to 30 applicant screenings and 3 active listings. No commitment required!";
+    if(text.includes('Rightmove')) reply = "Yes! You just need to paste your unique RentSift inbox address into your Rightmove Agent Hub to automate screenings instantly.";
+    if(text.includes('change my plan')) reply = "Absolutely. You can upgrade, downgrade, or buy extra applicant credits from your dashboard anytime. No lock-in contracts.";
+    addMsg(reply, 'bot');
+  }, 600);
+}
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  addMsg(text, 'user');
+  input.value = '';
+  document.getElementById('chatbot-faq').style.display = 'none';
+  setTimeout(() => {
+    addMsg("Thanks for your message! Our team will get back to you within 1 business day.", 'bot');
+  }, 1000);
+}
+function addMsg(text, type) {
+  const body = document.getElementById('chatbot-body');
+  const div = document.createElement('div');
+  div.className = type + '-msg';
+  div.textContent = text;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
 </script>
 </body>
 </html>
