@@ -229,7 +229,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 .toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:1000;transform:translateY(100px);opacity:0;transition:all .3s;display:flex;align-items:center;gap:8px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
 .toast.show{transform:translateY(0);opacity:1}
 
-/* YENİ EKLENEN: Top-up Buton Stilleri */
 .topup-btn-wrapper {
   display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px;
 }
@@ -240,6 +239,25 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
   border-color: var(--gold); box-shadow: 0 4px 12px rgba(184,134,11,0.08); background: var(--surface);
 }
 
+/* Chatbot Styles */
+.chatbot-trigger { position: fixed; bottom: 24px; left: 24px; width: 56px; height: 56px; background: var(--navy); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px; cursor: pointer; box-shadow: 0 4px 20px rgba(15,31,61,0.2); z-index: 900; transition: transform 0.2s; }
+.chatbot-trigger:hover { transform: translateY(-3px); background: var(--gold); }
+.chatbot-window { position: fixed; bottom: 90px; left: 24px; width: 340px; height: 480px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 12px 40px rgba(0,0,0,0.15); z-index: 900; display: none; flex-direction: column; overflow: hidden; }
+.chatbot-window.open { display: flex; animation: slideUp 0.3s ease; }
+@keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.chatbot-header { background: var(--navy); color: white; padding: 16px; display: flex; align-items: center; justify-content: space-between; }
+.chatbot-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 700; }
+.chatbot-close { background: none; border: none; color: white; font-size: 16px; cursor: pointer; }
+.chatbot-body { flex: 1; padding: 16px; overflow-y: auto; background: var(--bg); display: flex; flex-direction: column; gap: 12px; }
+.bot-msg { background: var(--surface); border: 1px solid var(--border); padding: 12px; border-radius: 12px; border-bottom-left-radius: 4px; font-size: 13px; color: var(--text); max-width: 85%; line-height: 1.5; }
+.user-msg { background: var(--gold-pale); border: 1px solid var(--gold-border); padding: 12px; border-radius: 12px; border-bottom-right-radius: 4px; font-size: 13px; color: var(--text); max-width: 85%; align-self: flex-end; line-height: 1.5; }
+.chatbot-faq { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.faq-btn { background: var(--surface); border: 1px solid var(--gold-border); color: var(--gold); padding: 8px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; text-align: left; transition: all 0.2s; }
+.faq-btn:hover { background: var(--gold); color: white; }
+.chatbot-input { padding: 16px; background: var(--surface); border-top: 1px solid var(--border); display: flex; gap: 8px; }
+.chatbot-input input { flex: 1; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px; font-size: 13px; outline: none; }
+.chatbot-input button { background: var(--navy); color: white; border: none; width: 40px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+
 @media(max-width:768px){
   .sidebar{display:none}
   .hamburger-btn{display:flex}
@@ -247,6 +265,7 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
   .detail-grid,.account-grid{grid-template-columns:1fr}
   .content{padding:16px}
   .topbar{padding:0 16px}
+  .chatbot-window { width: 90%; left: 5%; bottom: 90px; }
 }
 </style>
 </head>
@@ -471,10 +490,10 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 
         <div id="section-setup" style="display:none">
           <div class="setup-page">
-            <div class="setup-header"><h2>Setup & Integration</h2><p>Connect RentSift to your Rightmove account to automatically screen enquiries.</p></div>
+            <div class="setup-header"><h2>Setup & Integration</h2><p>Connect RentSift to your property portals (Rightmove, Zoopla, OnTheMarket) to automatically screen enquiries.</p></div>
             <div class="setup-card">
               <h4>Your unique RentSift inbox address</h4>
-              <p>Set this as your contact email in Rightmove. Every enquiry sent to this address will be automatically analysed by AI and appear in your Lead Dashboard.</p>
+              <p>Set this as your contact email in Rightmove, Zoopla, or OnTheMarket. Every enquiry sent to this address will be automatically analysed by AI and appear in your Lead Dashboard.</p>
               <div class="inbox-address-box">
                 <span class="inbox-address" id="inbox-address-display">Loading...</span>
                 <button class="copy-btn" onclick="copyInboxEmail()">Copy</button>
@@ -489,12 +508,12 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
               </div>
               <div class="setup-steps">
                 <div class="setup-step"><div class="step-num">1</div><div class="step-text">Copy your unique inbox address above</div></div>
-                <div class="setup-step"><div class="step-num">2</div><div class="step-text"><strong>Rightmove Agent Hub</strong> → top-right menu → <strong>Account Settings</strong> → <strong>Branch details</strong> → scroll to <em>"Branch enquiry email"</em> → paste your RentSift address → Save</div></div>
-                <div class="setup-step"><div class="step-num">3</div><div class="step-text"><strong>Update your Rightmove descriptions:</strong> Add a note to your property listings such as:<br><em>"To book a viewing quickly, please use the secure RentSift link provided in our automated email response."</em><br>This helps train applicants to use the pre-qualification form instantly.</div></div>
-                <div class="setup-step"><div class="step-num">4</div><div class="step-text">Every new Rightmove enquiry is automatically screened — results appear in your <strong>Lead Dashboard</strong> within seconds.</div></div>
+                <div class="setup-step"><div class="step-num">2</div><div class="step-text"><strong>Rightmove:</strong> Go to Agent Hub → Account Settings → Branch details → <em>"Branch enquiry email"</em> → paste address.<br><br><strong>Zoopla / OnTheMarket:</strong> Update your main branch enquiry email in your portal dashboard, or contact your account manager to change where leads are sent.</div></div>
+                <div class="setup-step"><div class="step-num">3</div><div class="step-text"><strong>Update your property descriptions:</strong> Add a note to your listings such as:<br><em>"To book a viewing quickly, please use the secure RentSift link provided in our automated email response."</em><br>This helps train applicants to use the pre-qualification form instantly.</div></div>
+                <div class="setup-step"><div class="step-num">4</div><div class="step-text">Every new portal enquiry is automatically screened — results appear in your <strong>Lead Dashboard</strong> within seconds.</div></div>
               </div>
             </div>
-            <div class="setup-card"><h4>How it works</h4><p>When a prospective tenant sends an enquiry through Rightmove, RentSift receives it, extracts the applicant's details, and runs an AI screening check using UK letting standards — income thresholds, document readiness, employment type, and urgency signals. You receive a scored result instantly.</p></div>
+            <div class="setup-card"><h4>How it works</h4><p>When a prospective tenant sends an enquiry through Rightmove, Zoopla, or OnTheMarket, RentSift receives it, extracts the applicant's details, and runs an AI screening check using UK letting standards — income thresholds, document readiness, employment type, and urgency signals. You receive a scored result instantly.</p></div>
           </div>
         </div>
 
@@ -508,7 +527,6 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                   <span class="plan-badge-name" id="account-plan-name">—</span>
                   <span class="plan-badge-status" id="account-plan-status">Active</span>
                 </div>
-                <div class="account-row"><span class="account-row-label">Billing</span><span class="account-row-value">Monthly</span></div>
                 <div class="account-row"><span class="account-row-label">Manage</span><span class="account-row-value"><a href="https://customer-portal.paddle.com/cpl_01ktkezar72n6j0yd5m7dqs3sz" target="_blank" style="color:var(--gold)">Manage subscription →</a></span></div>
               </div>
               <div class="account-card">
@@ -534,18 +552,24 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                 <div class="upgrade-nudge" id="upgrade-nudge" style="display:none">Approaching your monthly limit. <a href="https://rentsift.co.uk/#pricing">Upgrade your plan →</a></div>
                 
                 <div style="margin-top: 32px; padding-top: 24px; border-top: 1px dashed var(--border);">
-  <h5 style="font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Need more flexibility?</h5>
-  <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Top-up your allowances instantly without upgrading your plan.</p>
-  
-  <div class="topup-btn-wrapper">
-    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kvaxmw9pb827vbk55afkprsc',quantity:1}]})">
-      <span>⚡ +100 Applicants</span> <span style="color: var(--gold);">£49</span>
-    </button>
-    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kvaxtd26zzbthg8ptt6xsj9p',quantity:1}]})">
-      <span>🏠 +1 Listing</span> <span style="color: var(--gold);">£9</span>
-    </button>
-  </div>
-</div>
+                  <h5 style="font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 6px;">Need more flexibility?</h5>
+                  <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Top-up your allowances instantly without upgrading your plan. Applicant Packs roll over forever.</p>
+                  
+                  <div class="topup-btn-wrapper">
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kvaxmw9pb827vbk55afkprsc',quantity:1}]})">
+                      <span>⚡ +100 Applicants</span> <span style="color: var(--gold);">£49</span>
+                    </button>
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kw05n0p2q1v3m6wq4razczfc',quantity:1}]})">
+                      <span>⚡ +250 Applicants</span> <span style="color: var(--gold);">£99</span>
+                    </button>
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kw05nzr83thz58zjm2wnbb4f',quantity:1}]})">
+                      <span>⚡ +500 Applicants</span> <span style="color: var(--gold);">£179</span>
+                    </button>
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kvaxtd26zzbthg8ptt6xsj9p',quantity:1}]})">
+                      <span>🏠 +1 Listing</span> <span style="color: var(--gold);">£9</span>
+                    </button>
+                  </div>
+                </div>
 
               </div>
             </div>
@@ -562,16 +586,71 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
 </div>
 <div class="toast" id="toast"></div>
 
+<!-- Support Chatbot -->
+<div class="chatbot-trigger" onclick="toggleChatbot()">💬</div>
+<div class="chatbot-window" id="chatbot-window">
+  <div class="chatbot-header">
+    <div class="chatbot-title">RentSift Support</div>
+    <button class="chatbot-close" onclick="toggleChatbot()">✕</button>
+  </div>
+  <div class="chatbot-body" id="chatbot-body">
+    <div class="bot-msg">Hi there! I'm RentSift's AI assistant. How can I help you today?</div>
+    <div class="chatbot-faq" id="chatbot-faq">
+      <button class="faq-btn" onclick="sendFaq('How do I connect property portals?')">How do I connect property portals?</button>
+      <button class="faq-btn" onclick="sendFaq('How are extra credits billed?')">How are extra credits billed?</button>
+      <button class="faq-btn" onclick="sendFaq('What happens when I hit my limit?')">What happens when I hit my limit?</button>
+    </div>
+  </div>
+  <div class="chatbot-input">
+    <input type="text" id="chat-input" placeholder="Type your message..." onkeydown="if(event.key==='Enter')sendChat()">
+    <button onclick="sendChat()">➤</button>
+  </div>
+</div>
+
 <script>
 const SUPABASE_URL = 'https://zqwfrgphpefdexlokkvz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpxd2ZyZ3BocGVmZGV4bG9ra3Z6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg3NTgzMTQsImV4cCI6MjA5NDMzNDMxNH0.gk0mlANr7YsKbhgMBaEaEWDBK9iZU2PXRmF8u5AhPvA';
 const { createClient } = supabase;
 const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const PLAN_LIMITS = { starter: 50, professional: 150, agency: 450, free_trial: 30 };
+const PLAN_LIMITS = { starter: 50, professional: 200, agency: 500, free_trial: 30 };
 
 let allLeads = [], currentFilter = 'all', currentSearch = '', currentUser = null;
 let sessionTimeoutTracker; 
+
+function toggleChatbot() {
+  document.getElementById('chatbot-window').classList.toggle('open');
+}
+function sendFaq(text) {
+  addMsg(text, 'user');
+  document.getElementById('chatbot-faq').style.display = 'none';
+  setTimeout(() => {
+    let reply = "I've notified the support team. We'll get back to you shortly to your registered email.";
+    if(text.includes('portals') || text.includes('Rightmove') || text.includes('Zoopla')) reply = "To connect portals: Go to 'Setup & Integration' in your sidebar, copy your unique inbox address, and paste it as your main enquiry email in your Rightmove, Zoopla, or OnTheMarket dashboard.";
+    if(text.includes('extra credits')) reply = "Extra credits are one-off purchases that do not expire. They are used automatically when you exceed your monthly plan allowance.";
+    if(text.includes('limit')) reply = "When you hit 80% and 100% of your limit, we'll email you. Once you hit 100%, new applicants will be blocked unless you purchase a top-up or upgrade your plan.";
+    addMsg(reply, 'bot');
+  }, 600);
+}
+function sendChat() {
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  addMsg(text, 'user');
+  input.value = '';
+  document.getElementById('chatbot-faq').style.display = 'none';
+  setTimeout(() => {
+    addMsg("Thanks for your message! Our human team will review this and email you back within 1 business day. For immediate answers, check the Setup & Integration tab.", 'bot');
+  }, 1000);
+}
+function addMsg(text, type) {
+  const body = document.getElementById('chatbot-body');
+  const div = document.createElement('div');
+  div.className = type + '-msg';
+  div.textContent = text;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
 
 function openDrawer() {
   document.getElementById('mobile-sidebar').classList.add('open');
@@ -745,7 +824,6 @@ async function showDashboard() {
   document.getElementById('mob-user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
 
-  // YENİ EKLENEN: Sorguya extra_applicant_credits eklendi
   const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits').eq('id', currentUser.id).single();
 
   if (!profile?.is_active && profile?.subscription_status !== 'past_due') {
@@ -869,7 +947,6 @@ async function loadLeads() {
   document.getElementById('nav-badge').textContent = suitableCount;
   document.getElementById('mob-nav-badge').textContent = suitableCount;
 
-  // YENİ EKLENEN: Sorguya extra_applicant_credits eklendi
   const { data: profile } = await sb.from('profiles').select('plan, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits').eq('id', currentUser.id).single();
   if (profile) updateUsageBars(profile);
 }
@@ -891,7 +968,7 @@ function updateUsageBars(profile) {
   }
 
   const used = profile.monthly_lead_count || 0;
-  const extraCredits = profile.extra_applicant_credits || 0; // YENİ EKLENEN
+  const extraCredits = profile.extra_applicant_credits || 0;
   const pct = Math.min((used / limit) * 100, 100);
 
   const bar = document.getElementById('usage-bar');
@@ -902,13 +979,11 @@ function updateUsageBars(profile) {
   const nudge = document.getElementById('upgrade-nudge');
   if (nudge) nudge.style.display = pct >= 80 ? 'block' : 'none';
 
-  // YENİ EKLENEN: Ekstra Kredi UI Güncellemesi
   const extraCreditsItem = document.getElementById('extra-credits-item');
   if (extraCreditsItem) {
     if (extraCredits > 0) {
       document.getElementById('extra-credits-text').textContent = extraCredits;
       extraCreditsItem.style.display = 'flex';
-      // Ekstra kredi varsa upgrade uyarısını gizleyelim
       if (nudge) nudge.style.display = 'none'; 
     } else {
       extraCreditsItem.style.display = 'none';
