@@ -114,6 +114,15 @@ input.error,select.error{border-color:#dc2626}
       </div>
       <div class="field"><label>Email address <span class="req">*</span></label><input type="email" id="email" placeholder="jane@example.com" autocomplete="email"><div class="field-error" id="err-email">Please enter a valid email address.</div></div>
       <div class="field"><label>Mobile number <span class="req">*</span></label><input type="tel" id="phone" placeholder="+44 7700 900000" autocomplete="tel"><div class="field-error" id="err-phone">Please enter your mobile number.</div></div>
+      
+      <!-- PROPERTY ADDRESS ALANI EKLENDİ -->
+      <div class="field">
+        <label>Property Address / Reference <span class="req">*</span></label>
+        <input type="text" id="property_address" placeholder="e.g. 123 High Street, London">
+        <div class="field-hint">The address of the property you are applying for.</div>
+        <div class="field-error" id="err-property_address">Please enter the property address.</div>
+      </div>
+
       <div class="field"><label>Current postcode <span class="req">*</span></label><input type="text" id="region" placeholder="e.g. SW1A 1AA" style="text-transform:uppercase" maxlength="8"><div class="field-hint">Your current UK postcode.</div><div class="field-error" id="err-region">Please enter your postcode.</div></div>
       <div class="field">
         <label>Right to rent in the UK <span class="req">*</span></label>
@@ -213,8 +222,6 @@ input.error,select.error{border-color:#dc2626}
 <script>
 const params = new URLSearchParams(window.location.search);
 const agentId = params.get('agent') || '';
-
-// 🔥 GÜNCELLENDİ: Form artık URL'den 'lead' kimliğini de yakalıyor
 const leadId = params.get('lead') || ''; 
 
 const radioValues = {};
@@ -244,7 +251,8 @@ function showError(id, show) {
 function validateStep(step) {
   let valid = true;
   if (step === 1) {
-    ['first_name','last_name','phone','region'].forEach(id => {
+    // PROPERTY_ADDRESS VALIDASYONU EKLENDİ
+    ['first_name','last_name','phone','property_address','region'].forEach(id => {
       const val = document.getElementById(id).value.trim();
       showError(id, !val); if (!val) valid = false;
     });
@@ -303,6 +311,7 @@ async function submitForm() {
     name: document.getElementById('first_name').value.trim() + ' ' + document.getElementById('last_name').value.trim(),
     email: document.getElementById('email').value.trim(),
     phone: document.getElementById('phone').value.trim(),
+    property_address: document.getElementById('property_address').value.trim(), // PROPERTY ADDRESS EKLENDİ
     region: document.getElementById('region').value.trim().toUpperCase(),
     right_to_rent: radioValues['right_to_rent'] || '',
     employment: emp,
@@ -319,7 +328,6 @@ async function submitForm() {
     guarantor: radioValues['guarantor'] || '',
     message: document.getElementById('message').value.trim(),
     agent_id: agentId,
-    // 🔥 GÜNCELLENDİ: Yakalanan leadId backend'e fırlatılıyor
     lead_id: leadId 
   };
 
