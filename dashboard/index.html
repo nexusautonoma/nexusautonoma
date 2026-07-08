@@ -556,16 +556,16 @@ td{padding:13px 16px;font-size:13px;color:var(--text2);vertical-align:middle}
                   <p style="font-size: 13px; color: var(--muted); margin-bottom: 16px;">Top-up your allowances instantly without upgrading your plan. Applicant Packs roll over forever.</p>
                   
                   <div class="topup-btn-wrapper">
-                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kvaxmw9pb827vbk55afkprsc',quantity:1}]})">
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kvaxmw9pb827vbk55afkprsc',quantity:1}], customData: { user_id: currentUser.id } })">
                       <span>⚡ +100 Applicants</span> <span style="color: var(--gold);">£49</span>
                     </button>
-                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kw05n0p2q1v3m6wq4razczfc',quantity:1}]})">
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kw05n0p2q1v3m6wq4razczfc',quantity:1}], customData: { user_id: currentUser.id } })">
                       <span>⚡ +250 Applicants</span> <span style="color: var(--gold);">£99</span>
                     </button>
-                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kw05nzr83thz58zjm2wnbb4f',quantity:1}]})">
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kw05nzr83thz58zjm2wnbb4f',quantity:1}], customData: { user_id: currentUser.id } })">
                       <span>⚡ +500 Applicants</span> <span style="color: var(--gold);">£179</span>
                     </button>
-                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kvaxtd26zzbthg8ptt6xsj9p',quantity:1}]})">
+                    <button class="topup-btn" onclick="Paddle.Checkout.open({items:[{priceId:'pri_01kvaxtd26zzbthg8ptt6xsj9p',quantity:1}], customData: { user_id: currentUser.id } })">
                       <span>🏠 +1 Listing</span> <span style="color: var(--gold);">£9</span>
                     </button>
                   </div>
