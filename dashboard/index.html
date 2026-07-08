@@ -830,7 +830,7 @@ async function showDashboard() {
   document.getElementById('mob-user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
 
-  const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits').eq('id', currentUser.id).single();
+  const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits, extra_listing_credits').eq('id', currentUser.id).single();
 
   if (!profile?.is_active && profile?.subscription_status !== 'past_due') {
     document.getElementById('auth-view').style.display = 'none';
@@ -1024,9 +1024,9 @@ async function updateStats() {
 function updateUsageBars(profile) {
   if (!profile) return;
   const plan = (profile.plan || 'starter').toLowerCase();
-  
-  let limit = PLAN_LIMITS[plan] || 50;
-  if (profile.subscription_status === 'trialing') {
+
+  let limit = typeof PLAN_LIMITS[plan] === 'object' ? PLAN_LIMITS[plan].leads : (PLAN_LIMITS[plan] || 50);
+  if (profile.subscription_status === 'trialing' || profile.subscription_status === 'free_trial') {
     limit = 30;
   }
 
