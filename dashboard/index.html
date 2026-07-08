@@ -686,6 +686,7 @@ function resetSessionTimeout() {
 }
 
 async function init() {
+  console.log("🚀 [SİSTEM] Uygulama başlatılıyor. init() tetiklendi.");
   const saved = localStorage.getItem('theme');
   if (saved) {
     document.documentElement.setAttribute('data-theme', saved);
@@ -723,17 +724,22 @@ async function init() {
 
   const { data: { session } } = await sb.auth.getSession();
   if (session) {
+    console.log("✅ [SİSTEM] Aktif oturum bulundu. Kullanıcı ID:", session.user.id);
     currentUser = session.user;
     resetSessionTimeout();
     await showDashboard();
   } else {
+    console.log("⚠️ [SİSTEM] Aktif oturum yok, giriş ekranına yönlendiriliyor.");
     showAuth();
   }
+  
+  // Yükleme ekranı burada gizleniyor
+  console.log("✅ [SİSTEM] Yükleme ekranı (loading) kaldırılıyor.");
   document.getElementById('app-loading').style.display = 'none';
 
   setInterval(() => {
     if (currentUser) loadLeads();
-  }, 60000); // 1 dk, eski hali 30s idi. Sık API isteğinden kaçınmak için süreyi artırdık.
+  }, 60000); 
 }
 
 function showAuth() {
@@ -747,14 +753,22 @@ async function handleLogin() {
   const password = document.getElementById('login-password').value;
   const btn = document.getElementById('login-btn');
   const err = document.getElementById('login-error');
+  
+  console.log("🔐 [AUTH] Kullanıcı girişi deneniyor:", email);
   err.style.display = 'none';
+  
   if (!email || !password) { err.textContent = 'Please enter your email and password.'; err.style.display = 'block'; return; }
+  
   btn.disabled = true; btn.textContent = 'Signing in...';
   const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  
   if (error) {
+    console.error("❌ [AUTH] Giriş başarısız:", error.message);
     err.textContent = error.message === 'Invalid login credentials' ? 'Incorrect email or password.' : error.message;
     err.style.display = 'block'; btn.disabled = false; btn.textContent = 'Sign in to dashboard'; return;
   }
+  
+  console.log("✅ [AUTH] Giriş başarılı! Kullanıcı ID:", data.user.id);
   currentUser = data.user;
   resetSessionTimeout();
   await showDashboard();
@@ -820,6 +834,7 @@ function showTrialLockout(reason) {
 }
 
 async function showDashboard() {
+  console.log("📊 [DASHBOARD] Dashboard ekranı yükleniyor...");
   document.getElementById('auth-view').style.display = 'none';
   document.getElementById('dash-view').style.display = 'block';
   const email = currentUser.email;
@@ -829,9 +844,14 @@ async function showDashboard() {
   document.getElementById('mob-user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
 
-  const { data: profile } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits, extra_listing_credits').eq('id', currentUser.id).single();
+  const { data: profile, error: profileErr } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits, extra_listing_credits').eq('id', currentUser.id).single();
+  
+  if(profileErr) {
+     console.error("❌ [DASHBOARD] Profil çekilirken hata:", profileErr);
+  }
 
   if (!profile?.is_active && profile?.subscription_status !== 'past_due') {
+    console.log("⚠️ [DASHBOARD] Kullanıcının aktif aboneliği yok.");
     document.getElementById('auth-view').style.display = 'none';
     document.getElementById('dash-view').style.display = 'none';
     document.getElementById('app-loading').style.display = 'none';
@@ -902,8 +922,8 @@ async function showDashboard() {
     }
   }
 
-  document.getElementById('inbox-address-display').textContent = token ? \`\${token}@rentsift.co.uk\` : 'Not available';
-  document.getElementById('apply-link-display').textContent = \`https://rentsift.co.uk/apply?agent=\${currentUser.id}\`;
+  document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
+  document.getElementById('apply-link-display').textContent = `https://rentsift.co.uk/apply?agent=${currentUser.id}`;
   document.getElementById('user-plan-display').textContent = planLabel;
   document.getElementById('mob-user-plan-display').textContent = planLabel;
   
@@ -941,7 +961,6 @@ async function handleLogout() {
   showAuth();
 }
 
-// Fixed LoadLeads function with pagination + server-side filtering and search
 async function loadLeads(isLoadMore = false) {
   if (!isLoadMore) {
     currentPage = 0;
@@ -951,6 +970,7 @@ async function loadLeads(isLoadMore = false) {
   
   if (!hasMoreLeads && isLoadMore) return;
 
+  console.log(`📋 [VERİ] Adaylar çekiliyor... Filtre: ${currentFilter}, Arama: ${currentSearch}, Sayfa: ${currentPage}`);
   const from = currentPage * PAGE_SIZE;
   const to = from + PAGE_SIZE - 1;
 
@@ -961,33 +981,31 @@ async function loadLeads(isLoadMore = false) {
     .order('created_at', { ascending: false })
     .range(from, to);
 
-  // Apply filters via DB query
   if (currentFilter !== 'all') {
     query = query.eq('status', currentFilter);
   }
 
-  // Apply search via DB query
   if (currentSearch) {
-    query = query.or(\`name.ilike.%\${currentSearch}%,email.ilike.%\${currentSearch}%\`);
+    // Burada daha önce tırnak hataları vardı, düzeltildi:
+    query = query.or(`name.ilike.%${currentSearch}%,email.ilike.%${currentSearch}%`);
   }
 
   const { data, error, count } = await query;
 
-  if (error) { console.error(error); return; }
+  if (error) { console.error("❌ [VERİ] Adayları çekerken hata oluştu:", error); return; }
   
-  // Total record count for the overall dashboard based on the filter
   if (!isLoadMore) {
      totalLeadsCount = count || 0;
   }
 
   if (data) {
+    console.log(`✅ [VERİ] Aday verileri başarıyla çekildi. Çekilen kayıt sayısı: ${data.length}`);
     if (isLoadMore) {
       allLeads = [...allLeads, ...data];
     } else {
       allLeads = data;
     }
     
-    // Check if we retrieved fewer than PAGE_SIZE items, if so, there's no more data
     if (data.length < PAGE_SIZE) {
       hasMoreLeads = false;
     }
@@ -1002,7 +1020,6 @@ async function loadLeads(isLoadMore = false) {
 }
 
 async function updateStats() {
-  // Always query overall stats independent of current local filter/search state
   const { count: tCount } = await sb.from('leads').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id);
   document.getElementById('stat-total').textContent = tCount || 0;
   
@@ -1015,7 +1032,6 @@ async function updateStats() {
   const { count: rejectedCount } = await sb.from('leads').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id).eq('status', 'Unsuitable');
   document.getElementById('stat-rejected').textContent = rejectedCount || 0;
   
-  // Update sidebar badges
   document.getElementById('nav-badge').textContent = qualifiedCount || 0;
   document.getElementById('mob-nav-badge').textContent = qualifiedCount || 0;
 }
@@ -1037,7 +1053,7 @@ function updateUsageBars(profile) {
   if (!bar) return;
   bar.style.width = pct + '%';
   bar.className = 'usage-bar-fill' + (pct >= 90 ? ' danger' : pct >= 70 ? ' warn' : '');
-  document.getElementById('usage-count-text').textContent = \`\${used} / \${limit}\`;
+  document.getElementById('usage-count-text').textContent = `${used} / ${limit}`;
   const nudge = document.getElementById('upgrade-nudge');
   if (nudge) nudge.style.display = pct >= 80 ? 'block' : 'none';
 
@@ -1068,7 +1084,7 @@ function filterLeads(filter, btn) {
 function renderLeadsHTML() {
   const tbody = document.getElementById('leads-tbody');
   if (!allLeads.length) {
-    tbody.innerHTML = \`<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads found</div><div class="empty-sub">Adjust your search or filter criteria</div></div></td></tr>\`;
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">No leads found</div><div class="empty-sub">Adjust your search or filter criteria</div></div></td></tr>`;
     return;
   }
   
@@ -1076,11 +1092,12 @@ function renderLeadsHTML() {
     const sc = (l.score||0)>=75?'sc-q':(l.score||0)>=40?'sc-p':'sc-r';
     const st = l.status==='Suitable'?'st-q':l.status==='Further assessment required'?'st-p':'st-r';
     const date = l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'2-digit'}) : '—';
-    return \`<tr onclick="openModal(\${l.id})"><td><div class="td-primary">\${esc(l.name)}</div><div class="td-secondary">\${esc(l.email)}</div></td><td>\${l.budget?'£'+l.budget+'/mo':'—'}</td><td>\${esc(l.region)||'—'}</td><td>\${esc(l.employment)||'—'}</td><td><span class="score-chip \${sc}">\${l.score||'—'}/100</span></td><td><span class="status-chip \${st}">\${l.status||'—'}</span></td><td style="color:var(--muted);font-size:12px">\${date}</td></tr>\`;
+    // String hataları düzeltildi
+    return `<tr onclick="openModal(${l.id})"><td><div class="td-primary">${esc(l.name)}</div><div class="td-secondary">${esc(l.email)}</div></td><td>${l.budget?'£'+l.budget+'/mo':'—'}</td><td>${esc(l.region)||'—'}</td><td>${esc(l.employment)||'—'}</td><td><span class="score-chip ${sc}">${l.score||'—'}/100</span></td><td><span class="status-chip ${st}">${l.status||'—'}</span></td><td style="color:var(--muted);font-size:12px">${date}</td></tr>`;
   }).join('');
   
   if (hasMoreLeads) {
-    html += \`<tr><td colspan="7" style="text-align:center; padding:20px;"><button class="filter-btn active" style="width:auto; padding:10px 24px;" onclick="loadLeads(true)">Load More Leads...</button></td></tr>\`;
+    html += `<tr><td colspan="7" style="text-align:center; padding:20px;"><button class="filter-btn active" style="width:auto; padding:10px 24px;" onclick="loadLeads(true)">Load More Leads...</button></td></tr>`;
   }
   
   tbody.innerHTML = html;
@@ -1097,46 +1114,47 @@ function openModal(id) {
   const sc = (l.score||0)>=75?'sc-circle-q':(l.score||0)>=40?'sc-circle-p':'sc-circle-r';
   const st = l.status==='Suitable'?'st-q':l.status==='Further assessment required'?'st-p':'st-r';
   
-  const mailtoLink = \`mailto:\${esc(l.email)}?subject=Re: Your enquiry for \${esc(l.property_address || 'our property')}\`;
+  const mailtoLink = `mailto:${esc(l.email)}?subject=Re: Your enquiry for ${esc(l.property_address || 'our property')}`;
 
-  document.getElementById('modal-content').innerHTML = \`
+  // Detay penceresindeki string hataları da düzeltildi
+  document.getElementById('modal-content').innerHTML = `
     <div class="modal-header">
       <div>
-        <div class="modal-title">\${esc(l.name)}</div>
-        <div style="font-size:12px;color:var(--muted);margin-top:2px">\${esc(l.email)}</div>
+        <div class="modal-title">${esc(l.name)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(l.email)}</div>
       </div>
       <div style="display:flex;gap:10px;align-items:center">
-        <a href="\${mailtoLink}" class="copy-btn" style="text-decoration:none;background:var(--bg2);color:var(--text);border:1px solid var(--border)">↩ Reply to Applicant</a>
+        <a href="${mailtoLink}" class="copy-btn" style="text-decoration:none;background:var(--bg2);color:var(--text);border:1px solid var(--border)">↩ Reply to Applicant</a>
         <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
       </div>
     </div>
-    <div class="score-banner"><div class="score-circle \${sc}">\${l.score||'—'}</div><div class="score-info"><h4>AI Screening Score</h4><span class="status-chip \${st}" style="margin-top:4px;display:inline-flex">\${l.status||'—'}</span></div></div>
+    <div class="score-banner"><div class="score-circle ${sc}">${l.score||'—'}</div><div class="score-info"><h4>AI Screening Score</h4><span class="status-chip ${st}" style="margin-top:4px;display:inline-flex">${l.status||'—'}</span></div></div>
     <div class="modal-section"><div class="modal-section-label">Applicant Details</div><div class="detail-grid">
-      <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">\${esc(l.email)}</div></div>
-      <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">\${esc(l.phone)||'—'}</div></div>
-      <div class="detail-item"><div class="detail-label">Monthly Budget</div><div class="detail-value">\${l.budget?'£'+l.budget:'—'}</div></div>
-      <div class="detail-item"><div class="detail-label">Annual Income</div><div class="detail-value">\${l.annual_income?'£'+l.annual_income:'—'}</div></div>
-      <div class="detail-item"><div class="detail-label">Employment</div><div class="detail-value">\${esc(l.employment)||'—'}</div></div>
-      <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value">\${esc(l.region)||'—'}</div></div>
-      <div class="detail-item"><div class="detail-label">Document Status</div><div class="detail-value">\${esc(l.right_to_rent)||'—'}</div></div>
-      <div class="detail-item"><div class="detail-label">Property</div><div class="detail-value">\${esc(l.property_address)||'—'}</div></div>
-      <div class="detail-item"><div class="detail-label">Received</div><div class="detail-value">\${l.created_at?new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Email</div><div class="detail-value">${esc(l.email)}</div></div>
+      <div class="detail-item"><div class="detail-label">Phone</div><div class="detail-value">${esc(l.phone)||'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Monthly Budget</div><div class="detail-value">${l.budget?'£'+l.budget:'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Annual Income</div><div class="detail-value">${l.annual_income?'£'+l.annual_income:'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Employment</div><div class="detail-value">${esc(l.employment)||'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Location</div><div class="detail-value">${esc(l.region)||'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Document Status</div><div class="detail-value">${esc(l.right_to_rent)||'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Property</div><div class="detail-value">${esc(l.property_address)||'—'}</div></div>
+      <div class="detail-item"><div class="detail-label">Received</div><div class="detail-value">${l.created_at?new Date(l.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}):'—'}</div></div>
     </div></div>
-    \${l.message?\`<div class="modal-section"><div class="modal-section-label">Applicant Message</div><div class="message-box">"\${esc(l.message)}"</div></div>\`:\`\`}
-    \${l.analysis?\`<div class="modal-section"><div class="modal-section-label">AI Analysis</div><div class="ai-box"><div class="ai-box-label">✦ RentSift AI</div><div class="ai-box-text">\${esc(l.analysis)}</div></div></div>\`:\`\`}
+    ${l.message?`<div class="modal-section"><div class="modal-section-label">Applicant Message</div><div class="message-box">"${esc(l.message)}"</div></div>`:``}
+    ${l.analysis?`<div class="modal-section"><div class="modal-section-label">AI Analysis</div><div class="ai-box"><div class="ai-box-label">✦ RentSift AI</div><div class="ai-box-text">${esc(l.analysis)}</div></div></div>`:``}
     
     <div class="modal-section">
       <div class="modal-section-label">Agent Notes (Private)</div>
-      <textarea id="agent-note-\${l.id}" style="width:100%;height:80px;padding:12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:none;outline:none" placeholder="Add private notes for your team here...">\${esc(l.note || '') === '—' ? '' : esc(l.note || '')}</textarea>
-      <button class="filter-btn" style="margin-top:8px" onclick="saveNote(\${l.id})">💾 Save Note</button>
+      <textarea id="agent-note-${l.id}" style="width:100%;height:80px;padding:12px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;resize:none;outline:none" placeholder="Add private notes for your team here...">${esc(l.note || '') === '—' ? '' : esc(l.note || '')}</textarea>
+      <button class="filter-btn" style="margin-top:8px" onclick="saveNote(${l.id})">💾 Save Note</button>
     </div>
 
-    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px"><button class="delete-btn" onclick="deleteApplicant(\${l.id},'\${esc(l.name)}')">🗑 Delete applicant data (GDPR)</button></div>\`;
+    <div style="border-top:1px solid var(--border);padding-top:16px;margin-top:16px"><button class="delete-btn" onclick="deleteApplicant(${l.id},'${esc(l.name)}')">🗑 Delete applicant data (GDPR)</button></div>`;
   document.getElementById('modal').classList.add('open');
 }
 
 async function saveNote(id) {
-  const noteText = document.getElementById(\`agent-note-\${id}\`).value;
+  const noteText = document.getElementById(`agent-note-${id}`).value;
   const { error } = await sb.from('leads').update({ note: noteText }).eq('id', id);
   if (error) {
     showToast('⚠ Failed to save note: ' + error.message);
@@ -1152,11 +1170,10 @@ function closeModal(e) {
 }
 
 async function deleteApplicant(id, name) {
-  if (!confirm(\`Permanently delete all data for \${name}? This cannot be undone.\`)) return;
+  if (!confirm(`Permanently delete all data for ${name}? This cannot be undone.`)) return;
   const { error } = await sb.from('leads').delete().eq('id', id);
   if (error) { showToast('⚠ Delete failed: ' + error.message); return; }
   
-  // Refetch leads to apply pagination correctly after deletion
   loadLeads();
   document.getElementById('modal').classList.remove('open');
   showToast('✓ Applicant data permanently deleted');
@@ -1198,7 +1215,7 @@ async function exportCSV() {
     query = query.eq('status', currentFilter);
   }
   if (currentSearch) {
-    query = query.or(\`name.ilike.%\${currentSearch}%,email.ilike.%\${currentSearch}%\`);
+    query = query.or(`name.ilike.%${currentSearch}%,email.ilike.%${currentSearch}%`);
   }
 
   const { data: leadsToExport, error } = await query;
@@ -1216,26 +1233,26 @@ async function exportCSV() {
   const headers = ['Name', 'Email', 'Phone', 'Location', 'Budget', 'Income', 'Employment', 'Score', 'Status', 'Message', 'AI Analysis', 'Agent Note', 'Date Received'];
   
   const rows = leadsToExport.map(l => [
-    \`"\${(l.name||'').replace(/"/g, '""')}"\`,
-    \`"\${(l.email||'').replace(/"/g, '""')}"\`,
-    \`"\${(l.phone||'').replace(/"/g, '""')}"\`,
-    \`"\${(l.region||'').replace(/"/g, '""')}"\`,
-    \`"\${l.budget||0}"\`,
-    \`"\${l.annual_income||0}"\`,
-    \`"\${(l.employment||'').replace(/"/g, '""')}"\`,
-    \`"\${l.score||0}"\`,
-    \`"\${(l.status||'').replace(/"/g, '""')}"\`,
-    \`"\${(l.message||'').replace(/"/g, '""')}"\`,
-    \`"\${(l.analysis||'').replace(/"/g, '""')}"\`,
-    \`"\${(l.note||'').replace(/"/g, '""')}"\`,
-    \`"\${l.created_at ? new Date(l.created_at).toISOString().split('T')[0] : ''}"\`
+    `"${(l.name||'').replace(/"/g, '""')}"`,
+    `"${(l.email||'').replace(/"/g, '""')}"`,
+    `"${(l.phone||'').replace(/"/g, '""')}"`,
+    `"${(l.region||'').replace(/"/g, '""')}"`,
+    `"${l.budget||0}"`,
+    `"${l.annual_income||0}"`,
+    `"${(l.employment||'').replace(/"/g, '""')}"`,
+    `"${l.score||0}"`,
+    `"${(l.status||'').replace(/"/g, '""')}"`,
+    `"${(l.message||'').replace(/"/g, '""')}"`,
+    `"${(l.analysis||'').replace(/"/g, '""')}"`,
+    `"${(l.note||'').replace(/"/g, '""')}"`,
+    `"${l.created_at ? new Date(l.created_at).toISOString().split('T')[0] : ''}"`
   ]);
 
-  const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join("\\n");
+  const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows.map(e => e.join(','))].join("\n");
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  link.setAttribute("download", \`RentSift_Leads_\${new Date().toISOString().split('T')[0]}.csv\`);
+  link.setAttribute("download", `RentSift_Leads_${new Date().toISOString().split('T')[0]}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
