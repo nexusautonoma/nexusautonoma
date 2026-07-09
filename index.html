@@ -317,7 +317,7 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
       <a href="#how-it-works" onclick="showMain()">How it works</a>
       <a href="#features" onclick="showMain()">Features</a>
       <a href="#pricing" onclick="showMain()">Pricing</a>
-      <a href="https://rentsift.co.uk/dashboard">Sign In</a>
+      <a href="https://rentsift.co.uk/dashboard" id="nav-signin-btn" data-text="Sign In">Sign In</a>
     </div>
     <div class="nav-right">
       <button class="theme-btn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">🌙</button>
@@ -331,7 +331,7 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
     <a href="#how-it-works" onclick="showMain()">How it works</a>
     <a href="#features" onclick="showMain()">Features</a>
     <a href="#pricing" onclick="showMain()">Pricing</a>
-    <a href="https://rentsift.co.uk/dashboard">Sign In</a>
+    <a href="https://rentsift.co.uk/dashboard" id="mobile-signin-btn" data-text="Sign In">Sign In</a>
   </div>
 </div>
 
@@ -842,6 +842,10 @@ function addMsg(text, type) {
   body.appendChild(div);
   body.scrollTop = body.scrollHeight;
 }
+  document.addEventListener("DOMContentLoaded", function() {
+  document.getElementById("nav-signin-btn").textContent = "Sign In";
+  document.getElementById("mobile-signin-btn").textContent = "Sign In";
+});
 </script>
 </body>
 </html>
