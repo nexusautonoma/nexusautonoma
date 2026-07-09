@@ -853,7 +853,15 @@ function addMsg(text, type) {
   body.appendChild(div);
   body.scrollTop = body.scrollHeight;
 }
-  document.addEventListener("DOMContentLoaded", function() {
+
+if (history.scrollRestoration) {
+  history.scrollRestoration = 'manual';
+}
+window.addEventListener('load', function() {
+  window.scrollTo(0, 0);
+});
+
+document.addEventListener("DOMContentLoaded", function() {
   document.getElementById("nav-signin-btn").textContent = "Sign In";
   document.getElementById("mobile-signin-btn").textContent = "Sign In";
 });
