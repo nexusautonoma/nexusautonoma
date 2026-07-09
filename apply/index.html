@@ -82,6 +82,7 @@ input.error,select.error{border-color:#dc2626}
 .form-footer a{color:var(--gold);text-decoration:none}
 @media(max-width:600px){.field-row{grid-template-columns:1fr}.radio-group.horiz{flex-direction:column}.progress-step-label{display:none}.progress-step-num{margin-bottom:0}}
 </style>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
 <nav>
@@ -208,6 +209,10 @@ input.error,select.error{border-color:#dc2626}
         </div>
       </div>
       <div class="field"><label>Additional notes</label><textarea id="message" placeholder="Anything else you'd like us to know? Property preferences, specific requirements, questions…"></textarea></div>
+      <div class="field">
+        <div class="cf-turnstile" data-sitekey="0x4AAAAAADylEtzFiU83jGpY" data-theme="light" style="margin-bottom:16px"></div>
+        <div class="field-error" id="err-captcha" style="display:none; color:#dc2626;">Please complete the security check.</div>
+      </div>
       <div class="form-nav"><button type="button" class="btn btn-outline" onclick="prevStep(3)">← Back</button><button type="button" class="btn btn-primary" id="submit-btn" onclick="submitForm()">Submit enquiry →</button></div>
     </div>
   </form>
@@ -305,9 +310,22 @@ async function submitForm() {
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
   btn.textContent = 'Submitting…';
+
+  // --- CAPTCHA KONTROLÜ ---
+  const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value || '';
+  if (!turnstileToken) {
+    document.getElementById('err-captcha').style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Submit enquiry →';
+    return;
+  }
+  document.getElementById('err-captcha').style.display = 'none';
+  // ------------------------
+
   const emp = document.getElementById('employment').value;
   
   const payload = {
+    turnstile_token: turnstileToken, // YENİ EKLENDİ
     name: document.getElementById('first_name').value.trim() + ' ' + document.getElementById('last_name').value.trim(),
     email: document.getElementById('email').value.trim(),
     phone: document.getElementById('phone').value.trim(),
