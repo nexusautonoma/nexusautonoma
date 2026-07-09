@@ -78,8 +78,21 @@ h1 em{font-style:italic;color:var(--gold)}
 .hero-sub{font-size:17px;color:var(--text2);line-height:1.8;margin-bottom:36px;max-width:460px;font-weight:300}
 .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:48px}
 .btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:6px;font-size:14px;font-weight:600;text-decoration:none;transition:all .25s;font-family:'DM Sans',sans-serif;letter-spacing:0.3px;cursor:pointer;border:none}
-.btn-primary{background:var(--navy);color:white;box-shadow:0 4px 20px rgba(15,31,61,0.2)}
-.btn-primary:hover{background:var(--gold);transform:translateY(-2px);box-shadow:0 8px 32px rgba(184,134,11,0.3)}
+.btn-primary, 
+.plan-btn-primary, 
+.form-submit {
+  background: var(--gold) !important;
+  color: white !important;
+  box-shadow: 0 4px 20px rgba(184, 134, 11, 0.2) !important;
+  transition: all .25s ease !important;
+}
+.btn-primary:hover, 
+.plan-btn-primary:hover, 
+.form-submit:hover {
+  background: var(--gold-light) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 8px 32px rgba(184, 134, 11, 0.35) !important;
+}
 .btn-outline{border:1.5px solid var(--border2);color:var(--text2);background:transparent}
 .btn-outline:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-1px)}
 .btn-arrow{transition:transform .2s}
