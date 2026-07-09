@@ -181,7 +181,7 @@ h2{font-family:'Cormorant Garamond',serif;font-size:clamp(32px,4vw,52px);font-we
 .switch input { opacity: 0; width: 0; height: 0; }
 .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--border2); transition: .4s; }
 .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; }
-input:checked + .slider { background-color: var(--navy); }
+input:checked + .slider { background-color: #28c840; }
 input:checked + .slider:before { transform: translateX(22px); }
 .slider.round { border-radius: 34px; }
 .slider.round:before { border-radius: 50%; }
@@ -307,7 +307,7 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
   Paddle.Initialize({ token: "live_9007b9542bdc9791116e35db3b3" });
 </script>
 </head>
-<body>
+<body class="yearly">
 
 <nav>
   <div class="nav-inner">
@@ -494,13 +494,11 @@ footer{background:var(--navy);padding:64px 5% 40px;transition:background .3s}
     <p class="section-sub" style="margin-top: 0;">No setup fees. No long-term contracts. Cancel at any time.</p>
     
     <div class="pricing-toggle-wrap">
-      <span class="toggle-label" id="label-monthly">Monthly</span>
-      <label class="switch">
-        <input type="checkbox" id="pricing-toggle" onchange="togglePricingPeriod()">
-        <span class="slider round"></span>
-      </label>
-      <span class="toggle-label" id="label-yearly" style="color:var(--muted)">Yearly <span class="save-badge">Save 16%</span></span>
-    </div>
+  <span class="toggle-label" id="label-monthly" style="color:var(--muted)">Monthly</span> <label class="switch">
+    <input type="checkbox" id="pricing-toggle" onchange="togglePricingPeriod()" checked>
+    <span class="slider round"></span>
+  </label>
+  <span class="toggle-label" id="label-yearly" style="color:var(--text)">Yearly <span class="save-badge">Save 16%</span></span> </div>
     
     <div class="plans">
       <div class="plan">
