@@ -740,7 +740,6 @@ async function init() {
     showAuth();
   }
   
-  // Yükleme ekranı burada gizleniyor
   console.log("✅ [SİSTEM] Yükleme ekranı (loading) kaldırılıyor.");
   document.getElementById('app-loading').style.display = 'none';
 
@@ -1123,7 +1122,6 @@ function openModal(id) {
   
   const mailtoLink = `mailto:${esc(l.email)}?subject=Re: Your enquiry for ${esc(l.property_address || 'our property')}`;
 
-  // Detay penceresindeki string hataları da düzeltildi
   document.getElementById('modal-content').innerHTML = `
     <div class="modal-header">
       <div>
