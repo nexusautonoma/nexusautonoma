@@ -116,7 +116,6 @@ input.error,select.error{border-color:#dc2626}
       <div class="field"><label>Email address <span class="req">*</span></label><input type="email" id="email" placeholder="jane@example.com" autocomplete="email"><div class="field-error" id="err-email">Please enter a valid email address.</div></div>
       <div class="field"><label>Mobile number <span class="req">*</span></label><input type="tel" id="phone" placeholder="+44 7700 900000" autocomplete="tel"><div class="field-error" id="err-phone">Please enter your mobile number.</div></div>
       
-      <!-- PROPERTY ADDRESS ALANI EKLENDİ -->
       <div class="field">
         <label>Property Address / Reference <span class="req">*</span></label>
         <input type="text" id="property_address" placeholder="e.g. 123 High Street, London">
@@ -256,7 +255,6 @@ function showError(id, show) {
 function validateStep(step) {
   let valid = true;
   if (step === 1) {
-    // PROPERTY_ADDRESS VALIDASYONU EKLENDİ
     ['first_name','last_name','phone','property_address','region'].forEach(id => {
       const val = document.getElementById(id).value.trim();
       showError(id, !val); if (!val) valid = false;
@@ -311,7 +309,6 @@ async function submitForm() {
   btn.disabled = true;
   btn.textContent = 'Submitting…';
 
-  // --- CAPTCHA KONTROLÜ ---
   const turnstileToken = document.querySelector('[name="cf-turnstile-response"]')?.value || '';
   if (!turnstileToken) {
     document.getElementById('err-captcha').style.display = 'block';
@@ -320,7 +317,6 @@ async function submitForm() {
     return;
   }
   document.getElementById('err-captcha').style.display = 'none';
-  // ------------------------
 
   const emp = document.getElementById('employment').value;
   
@@ -329,7 +325,7 @@ async function submitForm() {
     name: document.getElementById('first_name').value.trim() + ' ' + document.getElementById('last_name').value.trim(),
     email: document.getElementById('email').value.trim(),
     phone: document.getElementById('phone').value.trim(),
-    property_address: document.getElementById('property_address').value.trim(), // PROPERTY ADDRESS EKLENDİ
+    property_address: document.getElementById('property_address').value.trim(), 
     region: document.getElementById('region').value.trim().toUpperCase(),
     right_to_rent: radioValues['right_to_rent'] || '',
     employment: emp,
