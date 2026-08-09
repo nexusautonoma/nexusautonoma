@@ -850,8 +850,7 @@ async function showDashboard() {
   document.getElementById('mob-user-av').textContent = email[0].toUpperCase();
   document.getElementById('account-email').textContent = email;
 
-  const { data: profile, error: profileErr } = await sb.from('profiles').select('inbox_token, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits, extra_listing_credits').eq('id', currentUser.id).single();
-  
+  const { data: profile, error: profileErr } = await sb.from('profiles').select('inbox_token, slug, plan, is_active, monthly_lead_count, lead_count_reset_at, subscription_status, extra_applicant_credits, extra_listing_credits').eq('id', currentUser.id).single();  
   if(profileErr) {
      console.error("❌ [DASHBOARD] Profil çekilirken hata:", profileErr);
   }
@@ -880,7 +879,7 @@ async function showDashboard() {
     return;
   }
 
-  const token = profile?.inbox_token || '';
+  const token = profile?.slug || profile?.inbox_token || '';
   const plan = profile?.plan || 'starter';
   const subStatus = profile?.subscription_status || 'active';
   
@@ -928,7 +927,7 @@ async function showDashboard() {
     }
   }
 
-  document.getElementById('inbox-address-display').textContent = token ? `${token}@rentsift.co.uk` : 'Not available';
+  document.getElementById('inbox-address-display').textContent = token ? `${token}@inbound.rentsift.co.uk` : 'Not available';
   document.getElementById('apply-link-display').textContent = `https://rentsift.co.uk/apply?agent=${currentUser.id}`;
   document.getElementById('user-plan-display').textContent = planLabel;
   document.getElementById('mob-user-plan-display').textContent = planLabel;
